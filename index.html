@@ -1,1 +1,415 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Member - Dolan Sawah</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #00796B; /* Teal tua dari header */
+            --primary-light: #00897B; /* Teal lebih terang */
+            --accent-color: #F57C00; /* Oranye untuk tombol */
+            --accent-hover: #EF6C00;
+            --bg-light: #F4F6F8;
+            --bg-white: #FFFFFF;
+            --text-dark: #333333;
+            --text-light: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --font-body: 'Poppins', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+            color: var(--text-light);
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .nav {
+            display: flex;
+            background-color: #FDFDFD;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: 15px;
+            background-color: transparent;
+            border: none;
+            border-bottom: 4px solid transparent;
+            color: var(--text-dark);
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s;
+            opacity: 0.6;
+        }
+        
+        .nav-button:hover { opacity: 1; }
+        .nav-button.active {
+            opacity: 1;
+            color: var(--primary-color);
+            border-bottom: 4px solid var(--primary-color);
+        }
+
+        main { padding: 25px; }
+        h2, h3, h4 { color: var(--primary-color); text-align: center; }
+        h4 { margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px; }
+
+        #birthday-corner {
+            background-color: #E0F2F1;
+            border: 1px solid #B2DFDB;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+        #birthday-corner h3 { margin-top: 0; }
+        #birthday-list li, #birthday-reward-info-list li { list-style: none; padding: 5px; }
+
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px; box-sizing: border-box; font-size: 1em;
+        }
+        .form-group input:focus { border-color: var(--primary-color); outline: none; }
+
+        button, .button-style {
+            width: 100%; padding: 15px; background-color: var(--accent-color); color: var(--text-light);
+            border: none; border-radius: 8px; cursor: pointer; font-size: 1.1em; font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        button:hover { background-color: var(--accent-hover); }
+
+        #member-info { margin-top: 25px; padding: 20px; background-color: #FAFAFA; border-radius: 8px; border: 1px solid var(--border-color); }
+        #member-info .poin { font-weight: 700; font-size: 2em; color: var(--primary-color); }
+
+        #claimable-rewards h4 { font-size: 1.1em; color: var(--text-dark); }
+        .reward-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; border-radius: 6px; margin-bottom: 8px; background-color: var(--bg-white);
+            border: 1px solid var(--border-color);
+        }
+        .redeem-btn {
+            background-color: var(--primary-color); color: white; padding: 8px 12px; border-radius: 5px;
+            font-size: 0.8em; font-weight: 500; width: auto;
+        }
+
+        #reward-list-container { list-style: none; padding: 0; }
+        #reward-list-container li { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-radius: 8px; margin-bottom: 10px; background-color: #F9F9F9; }
+        .delete-reward-btn {
+            background-color: #d9534f; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 0.8em; width: auto;
+        }
+
+        #status-message { text-align: center; padding: 15px; margin-top: 20px; border-radius: 8px; display: none; }
+        #status-message.success { background-color: #DFF0D8; color: #3C763D; border: 1px solid #D6E9C6; }
+        #status-message.error { background-color: #F2DEDE; color: #A94442; border: 1px solid #EBCCD1; }
+        .hidden { display: none !important; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header><h1>Sistem Member Dolan Sawah</h1></header>
+        
+        <div class="nav">
+            <button id="nav-search" class="nav-button active">Cari Member</button>
+            <button id="nav-register" class="nav-button">Daftar Member</button>
+            <button id="nav-rewards" class="nav-button">Atur Reward</button>
+        </div>
+
+        <main>
+            <div id="birthday-corner">
+                <h3>🎂 Ulang Tahun Hari Ini</h3>
+                <ul id="birthday-list"><li>Memeriksa data...</li></ul>
+                <h4>Reward Spesial Ulang Tahun:</h4>
+                <ul id="birthday-reward-info-list"><li>Memuat reward...</li></ul>
+            </div>
+
+            <section id="search-section" class="section active">
+                <h2>Cari & Info Member</h2>
+                <form id="search-form" autocomplete="off">
+                    <div class="form-group"><label for="search-hp">Nomor HP Member</label><input type="tel" id="search-hp" placeholder="Contoh: 081234567890" required></div>
+                    <button type="submit">Cari Member</button>
+                </form>
+
+                <div id="member-info" class="hidden">
+                    <h3>Detail Member</h3>
+                    <p><strong>Nama:</strong> <span id="info-nama"></span></p>
+                    <p><strong>Poin Terkumpul:</strong> <span id="info-poin" class="poin"></span></p>
+                    
+                    <div id="claimable-rewards"></div>
+                    <div id="transaction-form">
+                        <h4>Tambah Transaksi Baru</h4>
+                        <form id="add-transaction-form"><div class="form-group"><label for="transaction-amount">Nominal Transaksi (Rp)</label><input type="number" id="transaction-amount" placeholder="Contoh: 150000" required></div><button type="submit">Simpan Transaksi</button></form>
+                    </div>
+                </div>
+            </section>
+
+            <section id="register-section" class="section">
+                <h2>Pendaftaran Member Baru</h2>
+                <form id="register-form"><div class="form-group"><label for="nama">Nama Lengkap</label><input type="text" id="nama" required></div><div class="form-group"><label for="alamat">Alamat</label><input type="text" id="alamat" required></div><div class="form-group"><label for="nomor-hp">Nomor HP Aktif</label><input type="tel" id="nomor-hp" placeholder="Contoh: 081234567890" required></div><div class="form-group"><label for="tanggal-lahir">Tanggal Lahir</label><input type="date" id="tanggal-lahir" required></div><div class="form-group"><label for="sumber-info">Tahu Resto dari Mana?</label><select id="sumber-info" required><option value="">-- Pilih --</option><option>Instagram</option><option>Facebook</option><option>Teman/Keluarga</option><option>Lainnya</option></select></div><button type="submit">Daftarkan Member</button></form>
+            </section>
+
+            <section id="rewards-section" class="section">
+                <h2>Pengaturan Reward</h2>
+                
+                <div class="reward-subsection">
+                    <h3>Reward Poin</h3>
+                    <form id="add-point-reward-form"><div class="form-group"><label for="reward-name">Nama Reward</label><input type="text" id="reward-name" placeholder="Contoh: Gratis Es Teh" required></div><div class="form-group"><label for="reward-points">Poin Dibutuhkan</label><input type="number" id="reward-points" placeholder="Contoh: 5" required></div><button type="submit">Tambah Reward Poin</button></form>
+                    <h4>Daftar Reward Poin Aktif</h4>
+                    <ul id="point-reward-list" class="reward-list-container"></ul>
+                </div>
+
+                <hr style="margin: 40px 0;">
+
+                <div class="reward-subsection">
+                    <h3>Reward Spesial Ulang Tahun</h3>
+                    <form id="add-birthday-reward-form"><div class="form-group"><label for="birthday-reward-name">Nama Reward</label><input type="text" id="birthday-reward-name" placeholder="Contoh: Potongan Spesial 15%" required></div><button type="submit">Tambah Reward Ultah</button></form>
+                    <h4>Daftar Reward Ultah Aktif</h4>
+                    <ul id="birthday-reward-list" class="reward-list-container"></ul>
+                </div>
+            </section>
+
+            <div id="status-message"></div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEzWDI9ZWlc7NnUTDBbx7wednnUVeS9Ao",
+            authDomain: "member-hp-dolansawah.firebaseapp.com",
+            projectId: "member-hp-dolansawah",
+            storageBucket: "member-hp-dolansawah.appspot.com",
+            messagingSenderId: "277683917105",
+            appId: "1:277683917105:web:d496ee4547f339e2fee010"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        let allPointRewards = []; // Cache for rewards
+        let currentMemberId = null;
+
+        // ---- Elemen & Navigasi ----
+        document.querySelectorAll('.nav-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const targetId = button.id.replace('nav-', '') + '-section';
+                document.querySelectorAll('.section').forEach(section => section.classList.toggle('active', section.id === targetId));
+            });
+        });
+
+        const showStatus = (message, isError = false) => {
+            const div = document.getElementById('status-message');
+            div.textContent = message;
+            div.className = isError ? 'error' : 'success';
+            div.style.display = 'block';
+            setTimeout(() => { div.style.display = 'none'; }, 4000);
+        };
+
+        // ---- Logika Ulang Tahun ----
+        const checkBirthdays = async () => {
+            const list = document.getElementById('birthday-list');
+            const members = await getDocs(collection(db, "members"));
+            const todayMMDD = new Date().toLocaleDateString('en-CA').substring(5); // YYYY-MM-DD -> MM-DD
+            const birthdayMembers = members.docs.filter(doc => doc.data().tanggalLahir?.substring(5) === todayMMDD).map(doc => doc.data());
+
+            list.innerHTML = birthdayMembers.length > 0
+                ? birthdayMembers.map(m => `<li>${m.nama}</li>`).join('')
+                : '<li>Tidak ada member yang berulang tahun hari ini.</li>';
+        };
+
+        // ---- Logika Reward ----
+        const renderList = (listId, items, nameField, pointsField = null) => {
+            const listEl = document.getElementById(listId);
+            listEl.innerHTML = items.length > 0
+                ? items.map(item => `<li><span><strong>${item[nameField]}</strong>${pointsField ? ` - ${item[pointsField]} Poin` : ''}</span><button class="delete-reward-btn" data-id="${item.id}" data-type="${pointsField ? 'points' : 'birthday'}">Hapus</button></li>`).join('')
+                : `<li>Belum ada reward ditambahkan.</li>`;
+        };
+        
+        const fetchPointRewards = async () => {
+            const snapshot = await getDocs(collection(db, "rewards"));
+            allPointRewards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderList('point-reward-list', allPointRewards, 'name', 'points');
+        };
+
+        const fetchBirthdayRewards = async () => {
+            const snapshot = await getDocs(collection(db, "birthdayRewards"));
+            const birthdayRewards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderList('birthday-reward-list', birthdayRewards, 'name');
+            document.getElementById('birthday-reward-info-list').innerHTML = birthdayRewards.map(r => `<li>- ${r.name}</li>`).join('');
+        };
+
+        document.getElementById('add-point-reward-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const name = e.target.querySelector('#reward-name').value;
+            const points = parseInt(e.target.querySelector('#reward-points').value);
+            if (!name || !points) return showStatus("Nama dan Poin Reward harus diisi.", true);
+            await addDoc(collection(db, "rewards"), { name, points });
+            showStatus("Reward poin berhasil ditambahkan!");
+            e.target.reset();
+            fetchPointRewards();
+        });
+
+        document.getElementById('add-birthday-reward-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const name = e.target.querySelector('#birthday-reward-name').value;
+            if (!name) return showStatus("Nama Reward harus diisi.", true);
+            await addDoc(collection(db, "birthdayRewards"), { name });
+            showStatus("Reward ultah berhasil ditambahkan!");
+            e.target.reset();
+            fetchBirthdayRewards();
+        });
+
+        document.getElementById('rewards-section').addEventListener('click', async e => {
+            if (e.target.classList.contains('delete-reward-btn')) {
+                const { id, type } = e.target.dataset;
+                const collectionName = type === 'points' ? 'rewards' : 'birthdayRewards';
+                if (confirm("Yakin ingin menghapus reward ini?")) {
+                    await deleteDoc(doc(db, collectionName, id));
+                    showStatus("Reward berhasil dihapus.");
+                    type === 'points' ? fetchPointRewards() : fetchBirthdayRewards();
+                }
+            }
+        });
+
+        // ---- Logika Member & Transaksi ----
+        const displayClaimableRewards = (memberPoints) => {
+            const container = document.getElementById('claimable-rewards');
+            const affordableRewards = allPointRewards.filter(r => r.points <= memberPoints);
+            if (affordableRewards.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = `<h4>Reward yang Bisa Diklaim:</h4>` +
+                affordableRewards.map(r => `
+                    <div class="reward-item">
+                        <span><strong>${r.name}</strong> (${r.points} Poin)</span>
+                        <button class="redeem-btn" data-id="${r.id}" data-name="${r.name}" data-points="${r.points}">Redeem</button>
+                    </div>`).join('');
+        };
+
+        document.getElementById('search-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const nomorHp = document.getElementById('search-hp').value.trim();
+            const memberInfoDiv = document.getElementById('member-info');
+            memberInfoDiv.classList.add('hidden');
+            if (!nomorHp) return;
+
+            const docRef = doc(db, "members", nomorHp);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const member = docSnap.data();
+                currentMemberId = member.nomorHp;
+                document.getElementById('info-nama').textContent = member.nama;
+                document.getElementById('info-poin').textContent = member.poin || 0;
+                displayClaimableRewards(member.poin || 0);
+                memberInfoDiv.classList.remove('hidden');
+            } else {
+                showStatus(`Member dengan No. HP ${nomorHp} tidak ditemukan.`, true);
+            }
+        });
+        
+        document.getElementById('register-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const form = e.target;
+            const nomorHp = form.querySelector('#nomor-hp').value.trim();
+            await setDoc(doc(db, "members", nomorHp), {
+                nama: form.querySelector('#nama').value,
+                alamat: form.querySelector('#alamat').value,
+                nomorHp: nomorHp,
+                tanggalLahir: form.querySelector('#tanggal-lahir').value,
+                sumberInfo: form.querySelector('#sumber-info').value,
+                poin: 0,
+                tanggalDaftar: new Date()
+            });
+            showStatus("Member baru berhasil didaftarkan!");
+            form.reset();
+            document.getElementById('nav-search').click();
+        });
+
+        document.getElementById('add-transaction-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const amount = parseInt(e.target.querySelector('#transaction-amount').value);
+            if (!amount || !currentMemberId) return showStatus("Masukkan nominal valid.", true);
+            await addDoc(collection(db, "transactions"), { memberId: currentMemberId, nominal: amount, tanggal: new Date() });
+            showStatus("Transaksi berhasil disimpan! Poin akan diupdate oleh sistem.");
+            e.target.reset();
+            document.getElementById('member-info').classList.add('hidden');
+        });
+
+        document.getElementById('member-info').addEventListener('click', async e => {
+            if (e.target.classList.contains('redeem-btn')) {
+                const { name, points } = e.target.dataset;
+                const pointsCost = parseInt(points);
+
+                if (confirm(`Tukar ${pointsCost} poin dengan "${name}"? Poin member akan dikurangi.`)) {
+                    const memberDocRef = doc(db, "members", currentMemberId);
+                    try {
+                        await updateDoc(memberDocRef, { poin: increment(-pointsCost) });
+                        await addDoc(collection(db, "redemptions"), { memberId: currentMemberId, rewardName: name, pointsSpent: pointsCost, tanggal: new Date() });
+
+                        const poinDisplay = document.getElementById('info-poin');
+                        const newPoints = parseInt(poinDisplay.textContent) - pointsCost;
+                        poinDisplay.textContent = newPoints;
+
+                        displayClaimableRewards(newPoints);
+                        showStatus(`Poin berhasil ditukar dengan ${name}!`);
+                    } catch (error) {
+                        showStatus("Gagal menukar poin.", true);
+                        console.error("Redeem error:", error);
+                    }
+                }
+            }
+        });
+
+        // ---- Inisialisasi Aplikasi ----
+        document.addEventListener('DOMContentLoaded', () => {
+            checkBirthdays();
+            fetchPointRewards();
+            fetchBirthdayRewards();
+        });
+    </script>
+</body>
+</html>
+
 
