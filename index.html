@@ -109,6 +109,9 @@
         .stat-value { font-size: 2.8em; font-weight: 700; color: var(--accent-color); display: block; margin-bottom: 10px; }
         .chart-container { margin-top: 30px; padding: 20px; border-radius: 12px; background-color: #FDFDFD; border: 1px solid var(--border-color); }
         .chart-container h3 { margin-bottom: 20px; }
+        .data-list { list-style: none; padding: 0; margin-top: 20px; }
+        .data-list-item { padding: 10px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .data-list-item:last-child { border-bottom: none; }
         
         /* --- GAYA BARU UNTUK DAFTAR SEMUA MEMBER --- */
         #register-section .divider { border-top: 1px dashed var(--border-color); margin: 30px 0; }
@@ -207,7 +210,11 @@
                     <div class="stat-card"><h4>Member Datang</h4><span id="stat-visiting-members" class="stat-value">0</span></div>
                     <div class="stat-card"><h4>Reward Ditukar</h4><span id="stat-redeemed-rewards" class="stat-value">0</span></div>
                 </div>
-                <div class="chart-container"><h3>Sumber Informasi Member</h3><canvas id="info-source-chart"></canvas></div>
+                <div class="chart-container">
+                    <h3>Sumber Informasi Member</h3>
+                    <canvas id="info-source-chart"></canvas>
+                    <ul id="info-source-list" class="data-list"></ul>
+                </div>
             </section>
             <div id="status-message"></div>
         </main>
@@ -342,6 +349,17 @@
             }
             return null;
         };
+        
+        const updateInfoSourceList = (sourceCounts) => {
+            const listEl = document.getElementById('info-source-list');
+            listEl.innerHTML = ''; // Clear previous data
+            for (const source in sourceCounts) {
+                const li = document.createElement('li');
+                li.className = 'data-list-item';
+                li.innerHTML = `<span><strong>${source}</strong></span><span>${sourceCounts[source]} member</span>`;
+                listEl.appendChild(li);
+            }
+        };
 
         // --- NAVIGASI ---
         document.querySelectorAll('.nav-button').forEach(button => { button.addEventListener('click', () => { 
@@ -390,7 +408,7 @@
                     document.getElementById('whatsapp-member-btn').href = `https://wa.me/${formatPhoneNumber(member.nomorHp)}`;
                 }
                 
-                memberDetailOverlay.classList.add('visible'); document.getElementById('transaction-amount').focus(); } else { showStatus(`Member dengan No. HP ${nomorHp} tidak ditemukan.`, true); } } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
+                memberDetailOverlay.classList.add('visible'); document.getElementById('transaction-amount').focus(); } else { showStatus(`Member dengan No. HP ${nomorHp} tidak ditemukan.`, true); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
         document.getElementById('register-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const form = e.target; const nomorHp = form.querySelector('#nomor-hp').value.trim(); const docRef = doc(db, "members", nomorHp); const docSnap = await getDoc(docRef); if(docSnap.exists()){ throw new Error("Nomor HP ini sudah terdaftar sebagai member."); } await setDoc(docRef, { nama: form.querySelector('#nama').value, alamat: form.querySelector('#alamat').value, nomorHp: nomorHp, tanggalLahir: form.querySelector('#tanggal-lahir').value, sumberInfo: form.querySelector('#sumber-info').value, poin: 0, tanggalDaftar: new Date() }); showStatus("Member baru berhasil didaftarkan!"); form.reset(); document.getElementById('nav-search').click(); await fetchAllStatsData(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
         document.getElementById('add-transaction-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const amount = parseInt(e.target.querySelector('#transaction-amount').value); if (!amount || !currentMemberId) throw new Error("Masukkan nominal valid."); await addDoc(collection(db, "transactions"), { memberId: currentMemberId, nominal: amount, tanggal: new Date() }); showStatus("Transaksi berhasil disimpan! Poin akan diupdate oleh sistem."); e.target.reset(); memberDetailOverlay.classList.remove('visible'); await fetchAllStatsData(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
         document.getElementById('member-detail-overlay').addEventListener('click', async e => { const button = e.target.closest('.redeem-btn'); if (button) { const { name, points } = button.dataset; const pointsCost = parseInt(points); if (confirm(`Tukar ${pointsCost} poin dengan "${name}"? Poin member akan dikurangi.`)) { showLoading(button, true); try { const memberDocRef = doc(db, "members", currentMemberId); await updateDoc(memberDocRef, { poin: increment(-pointsCost) }); await addDoc(collection(db, "redemptions"), { memberId: currentMemberId, rewardName: name, pointsSpent: pointsCost, tanggal: new Date() }); const poinDisplay = document.getElementById('info-poin'); const newPoints = parseInt(poinDisplay.textContent) - pointsCost; poinDisplay.textContent = newPoints; displayClaimableRewards(newPoints); showStatus(`Poin berhasil ditukar dengan ${name}!`); await fetchAllStatsData(); } catch (error) { showStatus("Gagal menukar poin.", true); } finally { showLoading(button, false); } } } });
@@ -400,7 +418,7 @@
         const fetchAllStatsData = async () => { try { const [membersSnap, transactionsSnap, redemptionsSnap] = await Promise.all([ getDocs(collection(db, "members")), getDocs(collection(db, "transactions")), getDocs(collection(db, "redemptions")) ]); allMembers = membersSnap.docs.map(d => ({ id: d.id, ...d.data(), tanggalDaftar: d.data().tanggalDaftar.toDate() })); allTransactions = transactionsSnap.docs.map(d => ({ id: d.id, ...d.data(), tanggal: d.data().tanggal.toDate() })); allRedemptions = redemptionsSnap.docs.map(d => ({ id: d.id, ...d.data(), tanggal: d.data().tanggal.toDate() })); } catch (error) { console.error("Gagal mengambil data statistik:", error); showStatus("Gagal memuat data statistik.", true); } };
         const getDateRange = (period) => { const now = new Date(); const start = new Date(); const end = new Date(); if (period === 'today') { start.setHours(0, 0, 0, 0); end.setHours(23, 59, 59, 999); } else if (period === 'week') { const day = now.getDay(); const diff = now.getDate() - day + (day === 0 ? -6 : 1); start.setDate(diff); start.setHours(0, 0, 0, 0); end.setDate(start.getDate() + 6); end.setHours(23, 59, 59, 999); } else if (period === 'month') { start.setDate(1); start.setHours(0, 0, 0, 0); end.setMonth(now.getMonth() + 1); end.setDate(0); end.setHours(23, 59, 59, 999); } return { start, end }; };
         const updateStatsUI = (period) => { let filteredMembers = allMembers; let filteredTransactions = allTransactions; let filteredRedemptions = allRedemptions; if (period !== 'all') { const { start, end } = getDateRange(period); filteredMembers = allMembers.filter(m => m.tanggalDaftar >= start && m.tanggalDaftar <= end); filteredTransactions = allTransactions.filter(t => t.tanggal >= start && t.tanggal <= end); filteredRedemptions = allRedemptions.filter(r => r.tanggal >= start && r.tanggal <= end); } const visitingMemberIds = new Set(filteredTransactions.map(t => t.memberId)); document.getElementById('stat-total-members').textContent = allMembers.length; document.getElementById('stat-new-members').textContent = filteredMembers.length; document.getElementById('stat-visiting-members').textContent = visitingMemberIds.size; document.getElementById('stat-redeemed-rewards').textContent = filteredRedemptions.length; updateInfoSourceChart(); };
-        const updateInfoSourceChart = () => { const sourceCounts = allMembers.reduce((acc, member) => { const source = member.sumberInfo || 'Tidak Diketahui'; acc[source] = (acc[source] || 0) + 1; return acc; }, {}); const labels = Object.keys(sourceCounts); const data = Object.values(sourceCounts); if (infoSourceChart) { infoSourceChart.data.labels = labels; infoSourceChart.data.datasets[0].data = data; infoSourceChart.update(); } };
+        const updateInfoSourceChart = () => { const sourceCounts = allMembers.reduce((acc, member) => { const source = member.sumberInfo || 'Tidak Diketahui'; acc[source] = (acc[source] || 0) + 1; return acc; }, {}); const labels = Object.keys(sourceCounts); const data = Object.values(sourceCounts); if (infoSourceChart) { infoSourceChart.data.labels = labels; infoSourceChart.data.datasets[0].data = data; infoSourceChart.update(); } updateInfoSourceList(sourceCounts); };
         const initializeChart = () => { const ctx = document.getElementById('info-source-chart').getContext('2d'); if (infoSourceChart) infoSourceChart.destroy(); infoSourceChart = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [{ label: 'Sumber Info', data: [], backgroundColor: ['#00796B', '#F57C00', '#4CAF50', '#FFC107', '#2196F3'], hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false } }); };
         document.querySelector('.stats-filter').addEventListener('click', (e) => { if (e.target.tagName === 'BUTTON') { document.querySelectorAll('.stats-filter button').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); updateStatsUI(e.target.dataset.period); } });
 
