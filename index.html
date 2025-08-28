@@ -216,7 +216,7 @@
     <div id="member-detail-overlay" class="overlay">
         <div class="overlay-content">
             <button id="back-to-search-btn" class="btn"><span class="btn-text">Kembali ke Pencarian</span><span class="material-symbols-outlined">arrow_back</span></button>
-            <div id="birthday-notification" class="birthday-notification">🎉 Selamat ulang tahun! Member ini berhak mendapatkan reward spesial ulang tahun.</div>
+            <div id="birthday-notification" class="birthday-notification"></div>
             <h3>Detail Member</h3>
             <p><strong>Nama:</strong> <span id="info-nama"></span></p>
             <p><strong>Poin Terkumpul:</strong> <span id="info-poin" class="poin"></span></p>
@@ -333,11 +333,14 @@
             return phoneNumber;
         };
         
-        const isBirthdayToday = (memberTanggalLahir) => {
-            if (!memberTanggalLahir) return false;
+        const getBirthdayReward = (memberTanggalLahir) => {
             const today = new Date();
             const birthdate = new Date(memberTanggalLahir);
-            return today.getMonth() === birthdate.getMonth() && today.getDate() === birthdate.getDate();
+            if (today.getMonth() === birthdate.getMonth() && today.getDate() === birthdate.getDate()) {
+                // Return the first birthday reward found
+                return allBirthdayRewards.length > 0 ? allBirthdayRewards[0].name : null;
+            }
+            return null;
         };
 
         // --- NAVIGASI ---
@@ -377,9 +380,11 @@
         document.getElementById('search-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const nomorHp = document.getElementById('search-hp').value.trim(); if (!nomorHp) throw new Error("Nomor HP harus diisi."); const docRef = doc(db, "members", nomorHp); const docSnap = await getDoc(docRef); if (docSnap.exists()) { const member = docSnap.data(); currentMemberId = member.nomorHp; document.getElementById('info-nama').textContent = member.nama; document.getElementById('info-poin').textContent = member.poin || 0;
                 displayClaimableRewards(member.poin || 0);
 
-                if (isBirthdayToday(member.tanggalLahir)) {
+                const birthdayRewardName = getBirthdayReward(member.tanggalLahir);
+                if (birthdayRewardName) {
+                    birthdayNotification.textContent = `🎉 Selamat ulang tahun! Member ini berhak mendapatkan reward spesial: ${birthdayRewardName}.`;
                     birthdayNotification.classList.add('show');
-                    document.getElementById('whatsapp-member-btn').href = `https://wa.me/${formatPhoneNumber(member.nomorHp)}?text=${encodeURIComponent(`Halo ${member.nama}, selamat ulang tahun! Dolan Sawah punya penawaran spesial untukmu. Langsung datang ke resto dan tukar reward spesialmu! 🎉🥳`)}`;
+                    document.getElementById('whatsapp-member-btn').href = `https://wa.me/${formatPhoneNumber(member.nomorHp)}?text=${encodeURIComponent(`Halo ${member.nama}, selamat ulang tahun! Dolan Sawah punya penawaran spesial untukmu: *${birthdayRewardName}*. Langsung datang ke resto dan tukar reward spesialmu! 🎉🥳`)}`;
                 } else {
                     birthdayNotification.classList.remove('show');
                     document.getElementById('whatsapp-member-btn').href = `https://wa.me/${formatPhoneNumber(member.nomorHp)}`;
@@ -437,8 +442,9 @@
             }
             listEl.innerHTML = membersToRender.map(member => {
                 const formattedNumber = formatPhoneNumber(member.nomorHp);
-                const birthdayMessage = isBirthdayToday(member.tanggalLahir) 
-                    ? `Halo ${member.nama}, selamat ulang tahun! Dolan Sawah punya penawaran spesial untukmu. Langsung datang ke resto dan tukar reward spesialmu! 🎉🥳`
+                const birthdayRewardName = getBirthdayReward(member.tanggalLahir);
+                const birthdayMessage = birthdayRewardName
+                    ? `Halo ${member.nama}, selamat ulang tahun! Dolan Sawah punya penawaran spesial untukmu: *${birthdayRewardName}*. Langsung datang ke resto dan tukar reward spesialmu! 🎉🥳`
                     : `Halo ${member.nama}, ada info terbaru nih dari Dolan Sawah!`;
                 const whatsappLink = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(birthdayMessage)}`;
                 
