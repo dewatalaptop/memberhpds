@@ -9,426 +9,621 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0');
 
-        :root {
-            --primary-color: #00796B; --primary-light: #00897B; --accent-color: #F57C00; --accent-hover: #EF6C00;
-            --bg-light: #F4F6F8; --bg-white: #FFFFFF; --text-dark: #333333; --text-light: #FFFFFF;
-            --border-color: #E0E0E0; --shadow: 0 4px 6px rgba(0, 0, 0, 0.1); --font-body: 'Poppins', sans-serif;
-            --danger-color: #d9534f; --danger-hover: #c9302c; --info-color: #5bc0de; --info-hover: #31b0d5;
+        :root{
+            --primary-color:#00796B; --primary-light:#00897B; --accent-color:#F57C00; --accent-hover:#EF6C00;
+            --bg-light:#F4F6F8; --bg-white:#FFFFFF; --text-dark:#333; --text-light:#FFF;
+            --border-color:#E0E0E0; --shadow:0 4px 6px rgba(0,0,0,.1); --font-body:'Poppins',sans-serif;
+            --danger-color:#d9534f; --danger-hover:#c9302c; --info-color:#5bc0de; --info-hover:#31b0d5;
         }
 
-        body { font-family: var(--font-body); background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 20px; }
-        .container { width: 100%; max-width: 700px; margin: 0 auto; background-color: var(--bg-white); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
-        header { background: linear-gradient(135deg, var(--primary-light), var(--primary-color)); color: var(--text-light); padding: 20px; text-align: center; }
-        header h1 { margin: 0; font-size: 1.8em; font-weight: 700; }
-        .nav { display: flex; background-color: #FDFDFD; border-bottom: 1px solid var(--border-color); }
-        .nav-button { flex: 1; padding: 15px; background-color: transparent; border: none; border-bottom: 4px solid transparent; color: var(--text-dark); cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.3s; opacity: 0.6; }
-        .nav-button:hover { opacity: 1; }
-        .nav-button.active { opacity: 1; color: var(--primary-color); border-bottom: 4px solid var(--primary-color); }
-        main { padding: 25px; }
-        h2, h3, h4 { color: var(--primary-color); text-align: center; }
-        h4 { margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px; }
-        .section { display: none; }
-        .section.active { display: block; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-size: 1em; }
-        .form-group input:focus { border-color: var(--primary-color); outline: none; }
-        
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 1.1em; font-weight: 600; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .btn .material-symbols-outlined { font-size: 1.2em; }
-        .btn-primary { background-color: var(--accent-color); color: var(--text-light); }
-        .btn-primary:hover { background-color: var(--accent-hover); }
-        .btn-secondary { background-color: var(--bg-white); color: var(--accent-color); border: 2px solid var(--accent-color); padding: 13px; }
-        .btn-secondary:hover { background-color: var(--accent-color); color: var(--text-light); }
-        .btn-danger { background-color: var(--danger-color); color: var(--text-light); }
-        .btn-danger:hover { background-color: var(--danger-hover); }
-        .btn-info { background-color: var(--info-color); color: var(--text-light); }
-        .btn-info:hover { background-color: var(--info-hover); }
+        *{box-sizing:border-box}
+        body{font-family:var(--font-body); background:var(--bg-light); color:var(--text-dark); margin:0; padding:20px}
+        .container{width:100%; max-width:700px; margin:0 auto; background:var(--bg-white); border-radius:12px; box-shadow:var(--shadow); overflow:hidden}
 
-        .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: var(--text-light); border-radius: 50%; display: none; animation: spin 1s linear infinite; }
-        .btn-secondary .spinner { border-color: rgba(0,0,0,0.2); border-top-color: var(--accent-color); }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
-        .btn.loading .btn-text { display: none; }
-        .btn.loading .spinner { display: block; }
+        header{background:linear-gradient(135deg,var(--primary-light),var(--primary-color)); color:var(--text-light); padding:20px; text-align:center}
+        header h1{margin:0; font-size:1.8em; font-weight:700}
 
-        #status-message { padding: 15px; margin-top: 20px; border-radius: 8px; opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.3s ease; }
-        #status-message.visible { opacity: 1; visibility: visible; transform: translateY(0); }
-        #status-message.success { background-color: #DFF0D8; color: #3C763D; border: 1px solid #D6E9C6; }
-        #status-message.error { background-color: #F2DEDE; color: #A94442; border: 1px solid #EBCCD1; }
-        
-        /* Gaya notifikasi ulang tahun */
-        .birthday-notification { padding: 15px; background-color: #FFEB3B; color: #333; border: 1px solid #FFC107; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 600; display: none; }
-        .birthday-notification.show { display: block; }
+        .nav{display:flex; background:#FDFDFD; border-bottom:1px solid var(--border-color)}
+        .nav-button{flex:1; padding:15px; background:transparent; border:none; border-bottom:4px solid transparent; color:var(--text-dark); cursor:pointer; font-size:.95em; font-weight:600; transition:all .3s; opacity:.6}
+        .nav-button:hover{opacity:1}
+        /* FIX: border-bottom 4px (bukan 44px) */
+        .nav-button.active{opacity:1; color:var(--primary-color); border-bottom:4px solid var(--primary-color)}
 
-        .overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px); z-index: 1000; display: flex; justify-content: center; align-items: center;
-            padding: 20px; box-sizing: border-box; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
-        }
-        .overlay.visible { opacity: 1; visibility: visible; }
-        .overlay-content { 
-            background-color: var(--bg-white); padding: 20px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            width: calc(100% - 40px); max-width: 700px; max-height: 90vh; overflow-y: auto; 
-            transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .overlay.visible .overlay-content { transform: scale(1); }
-        
-        #back-to-search-btn { 
-            background-color: transparent; border: 2px solid var(--primary-color); color: var(--primary-color);
-            font-size: 1em; padding: 12px; margin-bottom: 20px; width: auto; align-self: flex-start;
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-        }
-        #back-to-search-btn:hover { background-color: var(--primary-color); color: var(--text-light); }
+        main{padding:25px}
+        h2,h3,h4{color:var(--primary-color); text-align:center}
+        h4{margin-top:25px; border-top:1px solid var(--border-color); padding-top:20px}
 
-        .poin { font-weight: 700; font-size: 2.5em; color: var(--primary-color); display: block; text-align: center; margin-bottom: 20px; }
-        #claimable-rewards h4 { font-size: 1.1em; color: var(--text-dark); text-align: left; }
-        .reward-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 8px; margin-bottom: 10px; background-color: #f7f7f7; border: 1px solid var(--border-color); transition: all 0.2s; }
-        .reward-item:hover { background-color: #f0f0f0; }
-        .redeem-btn { padding: 8px 16px; font-size: 0.9em; width: auto; }
-        
-        .reward-list-container { list-style: none; padding: 0; }
-        .reward-list-container li { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-radius: 8px; margin-bottom: 10px; background-color: #F9F9F9; }
-        .delete-reward-btn { padding: 8px 12px; font-size: 0.8em; width: auto; }
-        
-        #member-detail-overlay h3 { font-size: 1.5em; margin-bottom: 20px; }
-        #member-detail-overlay p { font-size: 1.1em; margin-bottom: 15px; }
-        #member-detail-overlay strong { font-weight: 600; }
+        .section{display:none}
+        .section.active{display:block}
 
-        .reward-subsection.hidden { display: none; }
-        .btn-options { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
-        .reward-subsection { margin-top: 20px; }
+        .form-group{margin-bottom:16px}
+        .form-group label{display:block; margin-bottom:8px; font-weight:500}
+        .form-group input,.form-group select{width:100%; padding:12px; border:1px solid var(--border-color); border-radius:8px; font-size:1em}
+        .form-group input:focus{border-color:var(--primary-color); outline:none}
 
-        /* --- GAYA STATISTIK --- */
-        .stats-filter { display: flex; justify-content: center; gap: 10px; margin: 20px 0 30px; }
-        .stats-filter button { background-color: var(--bg-white); color: var(--primary-color); border: 2px solid var(--border-color); padding: 10px 20px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-        .stats-filter button.active, .stats-filter button:hover { background-color: var(--primary-color); color: var(--text-light); border-color: var(--primary-color); }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .stat-card { background-color: #FDFDFD; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center; }
-        .stat-card h4 { margin: 0 0 10px 0; font-size: 1.1em; font-weight: 600; color: var(--text-dark); text-align: center; border-top: none; padding-top: 0; }
-        .stat-value { font-size: 2.8em; font-weight: 700; color: var(--accent-color); display: block; margin-bottom: 10px; }
-        .chart-container { margin-top: 30px; padding: 20px; border-radius: 12px; background-color: #FDFDFD; border: 1px solid var(--border-color); }
-        .chart-container h3 { margin-bottom: 20px; }
-        .data-list { list-style: none; padding: 0; margin-top: 20px; }
-        .data-list-item { padding: 10px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .data-list-item:last-child { border-bottom: none; }
-        
-        /* --- GAYA BARU UNTUK DAFTAR SEMUA MEMBER --- */
-        #register-section .divider { border-top: 1px dashed var(--border-color); margin: 30px 0; }
-        #all-members-list { list-style: none; padding: 0; margin-top: 20px; }
-        .member-list-item { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding: 15px; border-radius: 8px; margin-bottom: 10px; background-color: #F9F9F9; }
-        .member-list-item-info { flex-grow: 1; }
-        .member-list-item-info strong { display: block; font-size: 1.1em; color: var(--text-dark); }
-        .member-list-item-info span { color: #666; }
-        .member-list-item-actions { display: flex; gap: 10px; margin-top: 10px; width: 100%; justify-content: flex-end; }
-        @media (min-width: 500px) { .member-list-item-actions { margin-top: 0; width: auto; } }
-        .member-list-item-actions .btn { width: auto; padding: 8px 16px; font-size: 0.9em; }
+        .btn{width:100%; padding:15px; border:none; border-radius:8px; cursor:pointer; font-size:1.05em; font-weight:600; transition:all .3s; display:flex; justify-content:center; align-items:center; gap:8px}
+        .btn .material-symbols-outlined{font-size:1.2em}
+        .btn-primary{background:var(--accent-color); color:var(--text-light)}
+        .btn-primary:hover{background:var(--accent-hover)}
+        .btn-secondary{background:var(--bg-white); color:var(--accent-color); border:2px solid var(--accent-color); padding:13px}
+        .btn-secondary:hover{background:var(--accent-color); color:var(--text-light)}
+        .btn-danger{background:var(--danger-color); color:var(--text-light)}
+        .btn-danger:hover{background:var(--danger-hover)}
+        .btn-info{background:var(--info-color); color:var(--text-light)}
+        .btn-info:hover{background:var(--info-hover)}
+        .btn:disabled{opacity:.7; cursor:not-allowed}
 
+        .spinner{width:20px; height:20px; border:3px solid rgba(255,255,255,.3); border-top-color:var(--text-light); border-radius:50%; display:none; animation:spin 1s linear infinite}
+        .btn-secondary .spinner{border-color:rgba(0,0,0,.2); border-top-color:var(--accent-color)}
+        .btn.loading .btn-text{display:none}
+        .btn.loading .spinner{display:block}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        /* Status message – FIX: kelas sinkron & transisi */
+        #status-message{padding:14px; margin-top:16px; border-radius:8px; opacity:0; visibility:hidden; transform:translateY(6px); transition:all .25s ease}
+        #status-message.visible{opacity:1; visibility:visible; transform:translateY(0)}
+        #status-message.success{background:#DFF0D8; color:#3C763D; border:1px solid #D6E9C6}
+        #status-message.error{background:#F2DEDE; color:#A94442; border:1px solid #EBCCD1}
+
+        /* Notifikasi ultah */
+        .birthday-notification{padding:15px; background:#FFEB3B; color:#333; border:1px solid #FFC107; border-radius:8px; margin-bottom:20px; text-align:center; font-weight:600; display:none}
+        .birthday-notification.show{display:block}
+
+        /* Overlay */
+        .overlay{position:fixed; inset:0; background:rgba(0,0,0,.8); backdrop-filter:blur(8px); z-index:1000; display:flex; justify-content:center; align-items:center; padding:20px; opacity:0; visibility:hidden; transition:opacity .4s ease, visibility .4s ease}
+        .overlay.visible{opacity:1; visibility:visible}
+        .overlay-content{background:var(--bg-white); padding:20px; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,.3); width:calc(100% - 40px); max-width:700px; max-height:90vh; overflow:auto; transform:scale(.96); transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+        .overlay.visible .overlay-content{transform:scale(1)}
+
+        #back-to-search-btn{background:transparent; border:2px solid var(--primary-color); color:var(--primary-color); font-size:1em; padding:12px; margin-bottom:20px; width:auto}
+        #back-to-search-btn:hover{background:var(--primary-color); color:var(--text-light)}
+
+        .poin{font-weight:700; font-size:2.4em; color:var(--primary-color); display:block; text-align:center; margin-bottom:12px}
+
+        #claimable-rewards h4{font-size:1.05em; color:var(--text-dark); text-align:left}
+        .reward-item{display:flex; justify-content:space-between; align-items:center; padding:12px; border-radius:8px; margin-bottom:10px; background:#f7f7f7; border:1px solid var(--border-color); transition:all .2s}
+        .reward-item:hover{background:#f0f0f0}
+        .redeem-btn{padding:8px 16px; font-size:.9em; width:auto}
+
+        .reward-list-container{list-style:none; padding:0}
+        .reward-list-container li{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:12px; border-radius:8px; margin-bottom:8px; background:#F9F9F9; border:1px solid var(--border-color)}
+        .delete-reward-btn{padding:8px 12px; font-size:.85em; width:auto}
+
+        #member-detail-overlay h3{font-size:1.4em; margin-bottom:14px}
+        #member-detail-overlay p{font-size:1.05em; margin-bottom:10px}
+        #member-detail-overlay strong{font-weight:600}
+
+        .reward-subsection.hidden{display:none}
+        .btn-options{display:flex; flex-direction:column; gap:12px; margin-top:16px}
+        .reward-subsection{margin-top:16px}
+
+        /* STATISTIK */
+        .stats-filter{display:flex; justify-content:center; gap:10px; margin:8px 0 18px}
+        .stats-filter button{background:var(--bg-white); color:var(--primary-color); border:2px solid var(--border-color); padding:8px 14px; border-radius:18px; font-weight:600; cursor:pointer; transition:all .25s}
+        .stats-filter button.active,.stats-filter button:hover{background:var(--primary-color); color:var(--text-light); border-color:var(--primary-color)}
+
+        .stats-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px}
+        .stat-card{background:#FDFDFD; padding:16px; border-radius:12px; border:1px solid var(--border-color); text-align:center}
+        .stat-card h4{margin:0 0 8px 0; font-size:1em; font-weight:600; color:var(--text-dark); border-top:none; padding-top:0}
+        .stat-value{font-size:2.1em; font-weight:700; color:var(--accent-color); display:block}
+
+        .chart-container{margin-top:20px; padding:16px; border-radius:12px; background:#FDFDFD; border:1px solid var(--border-color)}
+        .chart-container h3{margin:0 0 12px 0}
+        /* FIX: tinggi kanvas agar selalu tampak & responsif */
+        #info-source-chart{width:100% !important; height:320px !important; display:block}
+        @media (max-width:480px){ #info-source-chart{height:260px !important} }
+
+        .data-list{list-style:none; padding:0; margin-top:12px}
+        .data-list-item{padding:10px 6px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; font-size:.98em}
+        .data-list-item:last-child{border-bottom:none}
+
+        /* DAFTAR SEMUA MEMBER */
+        #register-section .divider{border-top:1px dashed var(--border-color); margin:24px 0}
+        #all-members-list{list-style:none; padding:0; margin-top:10px}
+        .member-list-item{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; padding:12px; border-radius:8px; margin-bottom:8px; background:#F9F9F9; border:1px solid var(--border-color)}
+        .member-list-item-info{flex-grow:1}
+        .member-list-item-info strong{display:block; font-size:1.05em; color:var(--text-dark)}
+        .member-list-item-info span{color:#666}
+        .member-list-item-actions{display:flex; gap:8px; width:100%; justify-content:flex-end}
+        @media (min-width:500px){ .member-list-item-actions{width:auto} }
+        .member-list-item-actions .btn{width:auto; padding:8px 14px; font-size:.9em}
     </style>
 </head>
 <body>
-    <div class="container">
-        <header><h1>Sistem Member Dolan Sawah</h1></header>
-        <div class="nav">
-            <button id="nav-search" class="nav-button active">Cari Member</button>
-            <button id="nav-register" class="nav-button">Daftar Member</button>
-            <button id="nav-rewards" class="nav-button">Atur Reward</button>
-            <button id="nav-stats" class="nav-button">Statistik</button>
-        </div>
-        <main>
-            <section id="search-section" class="section active">
-                <h2>Cari & Info Member</h2>
-                <form id="search-form" autocomplete="off">
-                    <div class="form-group"><label for="search-hp">Nomor HP Member</label><input type="tel" id="search-hp" placeholder="Contoh: 081234567890" required autofocus></div>
-                    <button type="submit" class="btn btn-primary">
-                        <span class="btn-text">Cari Member</span>
-                        <span class="material-symbols-outlined">search</span>
-                        <span class="spinner"></span>
-                    </button>
-                </form>
-            </section>
-            <section id="register-section" class="section">
-                <h2>Pendaftaran Member Baru</h2>
-                <form id="register-form">
-                    <div class="form-group"><label for="nama">Nama Lengkap</label><input type="text" id="nama" required></div>
-                    <div class="form-group"><label for="alamat">Alamat</label><input type="text" id="alamat" required></div>
-                    <div class="form-group"><label for="nomor-hp">Nomor HP Aktif</label><input type="tel" id="nomor-hp" placeholder="Contoh: 081234567890" required></div>
-                    <div class="form-group"><label for="tanggal-lahir">Tanggal Lahir</label><input type="date" id="tanggal-lahir" required></div>
-                    <div class="form-group"><label for="sumber-info">Tahu Resto dari Mana?</label><select id="sumber-info" required><option value="">-- Pilih --</option><option>Instagram</option><option>Tiktok</option><option>Teman/Keluarga</option><option>Lainnya</option></select></div>
-                    <button type="submit" class="btn btn-primary">
-                        <span class="btn-text">Daftarkan Member</span>
-                        <span class="material-symbols-outlined">person_add</span>
-                        <span class="spinner"></span>
-                    </button>
-                </form>
-                <div class="divider"></div>
-                <h4>Manajemen Member</h4>
-                <button id="show-all-members-btn" class="btn btn-secondary">
-                    <span class="btn-text">Lihat Semua Data Member</span>
-                    <span class="material-symbols-outlined">group</span>
-                </button>
-            </section>
-            <section id="rewards-section" class="section">
-                <h2>Pengaturan Reward</h2>
-                <div id="reward-options" class="btn-options">
-                    <button id="btn-show-point-rewards" class="btn btn-primary">Atur Reward Poin</button>
-                    <button id="btn-show-birthday-rewards" class="btn btn-primary">Atur Reward Ulang Tahun</button>
-                </div>
-                <div id="point-rewards-container" class="reward-subsection hidden">
-                    <button class="btn btn-secondary back-to-reward-options"><span class="btn-text">Kembali</span><span class="material-symbols-outlined">arrow_back</span></button>
-                    <h3>Reward Poin</h3>
-                    <form id="add-point-reward-form">
-                        <div class="form-group"><label for="reward-name">Nama Reward</label><input type="text" id="reward-name" placeholder="Contoh: Gratis Es Teh" required></div>
-                        <div class="form-group"><label for="reward-points">Poin Dibutuhkan</label><input type="number" id="reward-points" placeholder="Contoh: 5" required></div>
-                        <button type="submit" class="btn btn-primary"><span class="btn-text">Tambah Reward Poin</span><span class="spinner"></span></button>
-                    </form>
-                    <h4>Daftar Reward Poin Aktif</h4>
-                    <ul id="point-reward-list" class="reward-list-container"></ul>
-                </div>
-                <div id="birthday-rewards-container" class="reward-subsection hidden">
-                    <button class="btn btn-secondary back-to-reward-options"><span class="btn-text">Kembali</span><span class="material-symbols-outlined">arrow_back</span></button>
-                    <h3>Reward Spesial Ulang Tahun</h3>
-                    <form id="add-birthday-reward-form">
-                        <div class="form-group"><label for="birthday-reward-name">Nama Reward</label><input type="text" id="birthday-reward-name" placeholder="Contoh: Potongan Spesial 15%" required></div>
-                        <button type="submit" class="btn btn-primary"><span class="btn-text">Tambah Reward Ultah</span><span class="spinner"></span></button>
-                    </form>
-                    <h4>Daftar Reward Ultah Aktif</h4>
-                    <ul id="birthday-reward-list" class="reward-list-container"></ul>
-                </div>
-            </section>
-            <section id="stats-section" class="section">
-                <h2>Statistik Member</h2>
-                <div class="stats-filter">
-                    <button class="active" data-period="today">Hari Ini</button>
-                    <button data-period="week">Minggu Ini</button>
-                    <button data-period="month">Bulan Ini</button>
-                    <button data-period="all">Semua</button>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card"><h4>Total Member</h4><span id="stat-total-members" class="stat-value">0</span></div>
-                    <div class="stat-card"><h4>Member Baru</h4><span id="stat-new-members" class="stat-value">0</span></div>
-                    <div class="stat-card"><h4>Member Datang</h4><span id="stat-visiting-members" class="stat-value">0</span></div>
-                    <div class="stat-card"><h4>Reward Ditukar</h4><span id="stat-redeemed-rewards" class="stat-value">0</span></div>
-                </div>
-                <div class="chart-container">
-                    <h3>Sumber Informasi Member</h3>
-                    <canvas id="info-source-chart"></canvas>
-                    <ul id="info-source-list" class="data-list"></ul>
-                </div>
-            </section>
-            <div id="status-message"></div>
-        </main>
+<div class="container">
+    <header><h1>Sistem Member Dolan Sawah</h1></header>
+
+    <div class="nav">
+        <button id="nav-search" class="nav-button active">Cari Member</button>
+        <button id="nav-register" class="nav-button">Daftar Member</button>
+        <button id="nav-rewards" class="nav-button">Atur Reward</button>
+        <button id="nav-stats" class="nav-button">Statistik</button>
     </div>
 
-    <div id="member-detail-overlay" class="overlay">
-        <div class="overlay-content">
-            <button id="back-to-search-btn" class="btn"><span class="btn-text">Kembali ke Pencarian</span><span class="material-symbols-outlined">arrow_back</span></button>
-            <div id="birthday-notification" class="birthday-notification"></div>
-            <h3>Detail Member</h3>
-            <p><strong>Nama:</strong> <span id="info-nama"></span></p>
-            <p><strong>Poin Terkumpul:</strong> <span id="info-poin" class="poin"></span></p>
-            <div id="claimable-rewards"></div>
-            <div class="btn-options">
-                <a id="whatsapp-member-btn" href="#" target="_blank" class="btn btn-info">
-                    <span class="btn-text">Hubungi via WhatsApp</span>
-                    <span class="material-symbols-outlined">sms</span>
-                </a>
-            </div>
-            <div id="transaction-form">
-                <h4>Tambah Transaksi Baru</h4>
-                <form id="add-transaction-form">
-                    <div class="form-group"><label for="transaction-amount">Nominal Transaksi (Rp)</label><input type="number" id="transaction-amount" placeholder="Contoh: 150000" required></div>
-                    <button type="submit" class="btn btn-primary"><span class="btn-text">Simpan Transaksi</span><span class="material-symbols-outlined">save</span><span class="spinner"></span></button>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <div id="password-prompt-overlay" class="overlay">
-        <div class="overlay-content">
-            <h3>Akses Terbatas</h3>
-            <form id="password-form">
+    <main>
+        <!-- Cari Member -->
+        <section id="search-section" class="section active">
+            <h2>Cari & Info Member</h2>
+            <form id="search-form" autocomplete="off">
                 <div class="form-group">
-                    <label for="admin-password">Masukkan Password Admin</label>
-                    <input type="password" id="admin-password" required>
+                    <label for="search-hp">Nomor HP Member</label>
+                    <input type="tel" id="search-hp" placeholder="Contoh: 081234567890" required autofocus>
                 </div>
                 <button type="submit" class="btn btn-primary">
-                    <span class="btn-text">Buka</span>
-                    <span class="material-symbols-outlined">lock_open</span>
-                </button>
-                <button type="button" id="cancel-password-btn" class="btn btn-secondary" style="margin-top: 10px;">
-                    <span class="btn-text">Batal</span>
+                    <span class="btn-text">Cari Member</span>
+                    <span class="material-symbols-outlined">search</span>
+                    <span class="spinner"></span>
                 </button>
             </form>
-        </div>
-    </div>
+        </section>
 
-    <div id="all-members-overlay" class="overlay">
-        <div class="overlay-content">
-            <button id="close-all-members-btn" class="btn btn-secondary" style="width: auto; margin-bottom: 20px;"><span class="material-symbols-outlined">close</span></button>
-            <h3>Semua Data Member</h3>
-            <div class="form-group">
-                <input type="tel" id="search-all-members-input" placeholder="Cari berdasarkan nomor HP...">
+        <!-- Daftar Member -->
+        <section id="register-section" class="section">
+            <h2>Pendaftaran Member Baru</h2>
+            <form id="register-form">
+                <div class="form-group"><label for="nama">Nama Lengkap</label><input type="text" id="nama" required></div>
+                <div class="form-group"><label for="alamat">Alamat</label><input type="text" id="alamat" required></div>
+                <div class="form-group"><label for="nomor-hp">Nomor HP Aktif</label><input type="tel" id="nomor-hp" placeholder="Contoh: 081234567890" required></div>
+                <div class="form-group"><label for="tanggal-lahir">Tanggal Lahir</label><input type="date" id="tanggal-lahir" required></div>
+                <div class="form-group">
+                    <label for="sumber-info">Tahu Resto dari Mana?</label>
+                    <select id="sumber-info" required>
+                        <option value="">-- Pilih --</option>
+                        <option>Instagram</option><option>Tiktok</option><option>Teman/Keluarga</option><option>Lainnya</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-text">Daftarkan Member</span>
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span class="spinner"></span>
+                </button>
+            </form>
+
+            <div class="divider"></div>
+            <h4>Manajemen Member</h4>
+            <button id="show-all-members-btn" class="btn btn-secondary">
+                <span class="btn-text">Lihat Semua Data Member</span>
+                <span class="material-symbols-outlined">group</span>
+            </button>
+        </section>
+
+        <!-- Reward -->
+        <section id="rewards-section" class="section">
+            <h2>Pengaturan Reward</h2>
+            <div id="reward-options" class="btn-options">
+                <button id="btn-show-point-rewards" class="btn btn-primary">Atur Reward Poin</button>
+                <button id="btn-show-birthday-rewards" class="btn btn-primary">Atur Reward Ulang Tahun</button>
             </div>
-            <ul id="all-members-list">
-                </ul>
-        </div>
-    </div>
 
-    <div id="edit-member-overlay" class="overlay">
-        <div class="overlay-content">
-            <h3>Edit Data Member</h3>
-            <form id="edit-member-form">
-                <input type="hidden" id="edit-member-id">
-                <div class="form-group"><label for="edit-nama">Nama Lengkap</label><input type="text" id="edit-nama" required></div>
-                <div class="form-group"><label for="edit-alamat">Alamat</label><input type="text" id="edit-alamat" required></div>
-                <div class="form-group"><label for="edit-nomor-hp">Nomor HP</label><input type="tel" id="edit-nomor-hp" readonly disabled></div>
-                <div class="form-group"><label for="edit-tanggal-lahir">Tanggal Lahir</label><input type="date" id="edit-tanggal-lahir" required></div>
-                <div class="form-group"><label for="edit-sumber-info">Tahu Resto dari Mana?</label><select id="edit-sumber-info" required><option value="">-- Pilih --</option><option>Instagram</option><option>Tiktok</option><option>Teman/Keluarga</option><option>Lainnya</option></select></div>
-                <div class="form-group"><label for="edit-poin">Poin</label><input type="number" id="edit-poin" required></div>
-                <button type="submit" class="btn btn-primary"><span class="btn-text">Update Data</span><span class="material-symbols-outlined">save</span><span class="spinner"></span></button>
-                <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="margin-top: 10px;"><span class="btn-text">Batal</span></button>
+            <div id="point-rewards-container" class="reward-subsection hidden">
+                <button class="btn btn-secondary back-to-reward-options">
+                    <span class="btn-text">Kembali</span>
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+                <h3>Reward Poin</h3>
+                <form id="add-point-reward-form">
+                    <div class="form-group"><label for="reward-name">Nama Reward</label><input type="text" id="reward-name" placeholder="Contoh: Gratis Es Teh" required></div>
+                    <div class="form-group"><label for="reward-points">Poin Dibutuhkan</label><input type="number" id="reward-points" placeholder="Contoh: 5" required></div>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="btn-text">Tambah Reward Poin</span><span class="spinner"></span>
+                    </button>
+                </form>
+                <h4>Daftar Reward Poin Aktif</h4>
+                <ul id="point-reward-list" class="reward-list-container"></ul>
+            </div>
+
+            <div id="birthday-rewards-container" class="reward-subsection hidden">
+                <button class="btn btn-secondary back-to-reward-options">
+                    <span class="btn-text">Kembali</span>
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+                <h3>Reward Spesial Ulang Tahun</h3>
+                <form id="add-birthday-reward-form">
+                    <div class="form-group"><label for="birthday-reward-name">Nama Reward</label><input type="text" id="birthday-reward-name" placeholder="Contoh: Potongan Spesial 15%" required></div>
+                    <button type="submit" class="btn btn-primary"><span class="btn-text">Tambah Reward Ultah</span><span class="spinner"></span></button>
+                </form>
+                <h4>Daftar Reward Ultah Aktif</h4>
+                <ul id="birthday-reward-list" class="reward-list-container"></ul>
+            </div>
+        </section>
+
+        <!-- Statistik -->
+        <section id="stats-section" class="section">
+            <h2>Statistik Member</h2>
+            <div class="stats-filter">
+                <button class="active" data-period="today">Hari Ini</button>
+                <button data-period="week">Minggu Ini</button>
+                <button data-period="month">Bulan Ini</button>
+                <button data-period="all">Semua</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card"><h4>Total Member</h4><span id="stat-total-members" class="stat-value">0</span></div>
+                <div class="stat-card"><h4>Member Baru</h4><span id="stat-new-members" class="stat-value">0</span></div>
+                <div class="stat-card"><h4>Member Datang</h4><span id="stat-visiting-members" class="stat-value">0</span></div>
+                <div class="stat-card"><h4>Reward Ditukar</h4><span id="stat-redeemed-rewards" class="stat-value">0</span></div>
+            </div>
+
+            <div class="chart-container">
+                <h3>Sumber Informasi Member</h3>
+                <canvas id="info-source-chart"></canvas>
+                <ul id="info-source-list" class="data-list"></ul>
+            </div>
+        </section>
+
+        <div id="status-message"></div>
+    </main>
+</div>
+
+<!-- Overlay Detail Member -->
+<div id="member-detail-overlay" class="overlay">
+    <div class="overlay-content">
+        <button id="back-to-search-btn" class="btn">
+            <span class="btn-text">Kembali ke Pencarian</span>
+            <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+
+        <div id="birthday-notification" class="birthday-notification"></div>
+
+        <h3>Detail Member</h3>
+        <p><strong>Nama:</strong> <span id="info-nama"></span></p>
+        <p><strong>Poin Terkumpul:</strong> <span id="info-poin" class="poin"></span></p>
+        <div id="claimable-rewards"></div>
+
+        <div class="btn-options">
+            <a id="whatsapp-member-btn" href="#" target="_blank" class="btn btn-info">
+                <span class="btn-text">Hubungi via WhatsApp</span>
+                <span class="material-symbols-outlined">sms</span>
+            </a>
+        </div>
+
+        <div id="transaction-form">
+            <h4>Tambah Transaksi Baru</h4>
+            <form id="add-transaction-form">
+                <div class="form-group">
+                    <label for="transaction-amount">Nominal Transaksi (Rp)</label>
+                    <input type="number" id="transaction-amount" placeholder="Contoh: 150000" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-text">Simpan Transaksi</span>
+                    <span class="material-symbols-outlined">save</span>
+                    <span class="spinner"></span>
+                </button>
             </form>
         </div>
     </div>
+</div>
 
+<!-- Overlay Password -->
+<div id="password-prompt-overlay" class="overlay">
+    <div class="overlay-content">
+        <h3>Akses Terbatas</h3>
+        <form id="password-form">
+            <div class="form-group">
+                <label for="admin-password">Masukkan Password Admin</label>
+                <input type="password" id="admin-password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <span class="btn-text">Buka</span>
+                <span class="material-symbols-outlined">lock_open</span>
+            </button>
+            <button type="button" id="cancel-password-btn" class="btn btn-secondary" style="margin-top:10px;">
+                <span class="btn-text">Batal</span>
+            </button>
+        </form>
+    </div>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<!-- Overlay Semua Member -->
+<div id="all-members-overlay" class="overlay">
+    <div class="overlay-content">
+        <button id="close-all-members-btn" class="btn btn-secondary" style="width:auto; margin-bottom:20px;">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <h3>Semua Data Member</h3>
+        <div class="form-group">
+            <input type="tel" id="search-all-members-input" placeholder="Cari berdasarkan nomor HP...">
+        </div>
+        <ul id="all-members-list"></ul>
+    </div>
+</div>
 
-        const firebaseConfig = { apiKey: "AIzaSyAEzWDI9ZWlc7NnUTDBbx7wednnUVeS9Ao", authDomain: "member-hp-dolansawah.firebaseapp.com", projectId: "member-hp-dolansawah", storageBucket: "member-hp-dolansawah.appspot.com", messagingSenderId: "277683917105", appId: "1:277683917105:web:d496ee4547f339e2fee010" };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        
-        // --- VARIABEL GLOBAL ---
-        let allPointRewards = [];
-        let allBirthdayRewards = [];
-        let currentMemberId = null;
-        let allMembers = [], allTransactions = [], allRedemptions = []; 
-        let fullMemberList = []; 
-        let infoSourceChart = null; 
+<!-- Overlay Edit Member -->
+<div id="edit-member-overlay" class="overlay">
+    <div class="overlay-content">
+        <h3>Edit Data Member</h3>
+        <form id="edit-member-form">
+            <input type="hidden" id="edit-member-id">
+            <div class="form-group"><label for="edit-nama">Nama Lengkap</label><input type="text" id="edit-nama" required></div>
+            <div class="form-group"><label for="edit-alamat">Alamat</label><input type="text" id="edit-alamat" required></div>
+            <div class="form-group"><label for="edit-nomor-hp">Nomor HP</label><input type="tel" id="edit-nomor-hp" readonly disabled></div>
+            <div class="form-group"><label for="edit-tanggal-lahir">Tanggal Lahir</label><input type="date" id="edit-tanggal-lahir" required></div>
+            <div class="form-group">
+                <label for="edit-sumber-info">Tahu Resto dari Mana?</label>
+                <select id="edit-sumber-info" required>
+                    <option value="">-- Pilih --</option>
+                    <option>Instagram</option><option>Tiktok</option><option>Teman/Keluarga</option><option>Lainnya</option>
+                </select>
+            </div>
+            <div class="form-group"><label for="edit-poin">Poin</label><input type="number" id="edit-poin" required></div>
+            <button type="submit" class="btn btn-primary">
+                <span class="btn-text">Update Data</span>
+                <span class="material-symbols-outlined">save</span>
+                <span class="spinner"></span>
+            </button>
+            <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="margin-top:10px;">
+                <span class="btn-text">Batal</span>
+            </button>
+        </form>
+    </div>
+</div>
 
-        const memberDetailOverlay = document.getElementById('member-detail-overlay');
-        const backToSearchBtn = document.getElementById('back-to-search-btn');
-        const passwordPromptOverlay = document.getElementById('password-prompt-overlay');
-        const allMembersOverlay = document.getElementById('all-members-overlay');
-        const editMemberOverlay = document.getElementById('edit-member-overlay');
-        const birthdayNotification = document.getElementById('birthday-notification');
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // --- FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyAEzWDI9ZWlc7NnUTDBbx7wednnUVeS9Ao",
+        authDomain: "member-hp-dolansawah.firebaseapp.com",
+        projectId: "member-hp-dolansawah",
+        storageBucket: "member-hp-dolansawah.appspot.com",
+        messagingSenderId: "277683917105",
+        appId: "1:277683917105:web:d496ee4547f339e2fee010"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
 
-        // --- FUNGSI HELPER ---
-        const showLoading = (button, isLoading) => { button.disabled = isLoading; button.classList.toggle('loading', isLoading); };
+    // --- GLOBAL STATE ---
+    let allPointRewards = [];
+    let allBirthdayRewards = [];
+    let currentMemberId = null;
+    let allMembers = [], allTransactions = [], allRedemptions = [];
+    let fullMemberList = [];
+    let infoSourceChart = null;
 
-        const showStatus = (message, isError = false, targetElementId = 'status-message') => {
-            const div = document.getElementById(targetElementId);
-            div.textContent = message;
-            div.className = isError ? 'error' : 'success';
-            div.classList.add('visible');
-            setTimeout(() => { div.classList.remove('visible'); }, 4000);
-        };
-        
-        const closeAllOverlays = () => {
-            document.querySelectorAll('.overlay').forEach(o => o.classList.remove('visible'));
-        };
+    const memberDetailOverlay   = document.getElementById('member-detail-overlay');
+    const backToSearchBtn       = document.getElementById('back-to-search-btn');
+    const passwordPromptOverlay = document.getElementById('password-prompt-overlay');
+    const allMembersOverlay     = document.getElementById('all-members-overlay');
+    const editMemberOverlay     = document.getElementById('edit-member-overlay');
+    const birthdayNotification  = document.getElementById('birthday-notification');
 
-        const formatPhoneNumber = (phoneNumber) => {
-            if (phoneNumber.startsWith('08')) {
-                return '628' + phoneNumber.substring(2);
-            }
-            return phoneNumber;
-        };
-        
-        const getBirthdayReward = (memberTanggalLahir) => {
-            const today = new Date();
-            const birthdate = new Date(memberTanggalLahir);
-            if (today.getMonth() === birthdate.getMonth() && today.getDate() === birthdate.getDate()) {
-                return allBirthdayRewards.length > 0 ? allBirthdayRewards[0].name : null;
-            }
-            return null;
-        };
-        
-        const updateInfoSourceList = (sourceCounts) => {
-            const listEl = document.getElementById('info-source-list');
-            listEl.innerHTML = ''; 
-            for (const source in sourceCounts) {
-                const li = document.createElement('li');
-                li.className = 'data-list-item';
-                li.innerHTML = `<span><strong>${source}</strong></span><span>${sourceCounts[source]} member</span>`;
-                listEl.appendChild(li);
-            }
-        };
+    // --- HELPERS ---
+    const showLoading = (button, isLoading) => {
+        if (!button) return;
+        button.disabled = isLoading;
+        button.classList.toggle('loading', isLoading);
+    };
 
-        // --- NAVIGASI ---
-        const setupNavigation = () => {
-            document.querySelectorAll('.nav-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    const targetId = button.id.replace('nav-', '') + '-section';
-                    document.querySelectorAll('.section').forEach(section => section.classList.toggle('active', section.id === targetId));
-                    if (targetId === 'stats-section') {
-                        updateStatsUI('today');
-                    }
+    // FIX: sinkron dengan CSS #status-message.success / .error
+    const showStatus = (message, isError = false, targetElementId = 'status-message') => {
+        const div = document.getElementById(targetElementId);
+        if (!div) return;
+        div.textContent = message;
+        div.className = ''; // reset
+        div.classList.add(isError ? 'error' : 'success', 'visible');
+        // auto-hide + reset class
+        setTimeout(() => {
+            div.classList.remove('visible','success','error');
+            div.textContent = '';
+        }, 3500);
+    };
+
+    const closeAllOverlays = () => {
+        document.querySelectorAll('.overlay').forEach(o => o.classList.remove('visible'));
+    };
+
+    const formatPhoneNumber = (phoneNumber) => {
+        const s = (phoneNumber || '').trim();
+        if (s.startsWith('08')) return '628' + s.substring(2);
+        if (s.startsWith('+62')) return s.substring(1);
+        return s;
+    };
+
+    const getBirthdayReward = (memberTanggalLahir) => {
+        if (!memberTanggalLahir) return null;
+        const today = new Date();
+        const birthdate = new Date(memberTanggalLahir);
+        if (today.getMonth() === birthdate.getMonth() && today.getDate() === birthdate.getDate()) {
+            return allBirthdayRewards.length > 0 ? allBirthdayRewards[0].name : null;
+        }
+        return null;
+    };
+
+    const updateInfoSourceList = (sourceCounts) => {
+        const listEl = document.getElementById('info-source-list');
+        listEl.innerHTML = '';
+        Object.entries(sourceCounts).forEach(([source,count])=>{
+            const li = document.createElement('li');
+            li.className = 'data-list-item';
+            li.innerHTML = `<span><strong>${source}</strong></span><span>${count} member</span>`;
+            listEl.appendChild(li);
+        });
+    };
+
+    // --- NAV ---
+    const setupNavigation = () => {
+        document.querySelectorAll('.nav-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const targetId = button.id.replace('nav-','') + '-section';
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.toggle('active', section.id === targetId);
                 });
+                if (targetId === 'stats-section') updateStatsUI('today');
             });
-        };
+        });
+    };
 
-        // --- LOGIKA BAGIAN REWARD ---
-        const renderList = (listId, items, nameField, pointsField = null) => {
-            const listEl = document.getElementById(listId);
-            listEl.innerHTML = items.length > 0
-                ? items.map(item => `<li><span><strong>${item[nameField]}</strong>${pointsField ? ` - ${item[pointsField]} Poin` : ''}</span><button class="btn btn-danger delete-reward-btn" data-id="${item.id}" data-type="${pointsField ? 'points' : 'birthday'}"><span class="btn-text">Hapus</span><span class="spinner"></span></button></li>`).join('')
-                : `<li>Belum ada reward ditambahkan.</li>`;
-        };
-        const fetchPointRewards = async () => { try { const snapshot = await getDocs(collection(db, "rewards")); allPointRewards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderList('point-reward-list', allPointRewards, 'name', 'points'); } catch (error) { console.error("Gagal memuat reward poin:", error); } };
-        const fetchBirthdayRewards = async () => { try { const snapshot = await getDocs(collection(db, "birthdayRewards")); allBirthdayRewards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderList('birthday-reward-list', allBirthdayRewards, 'name'); } catch (error) { console.error("Gagal memuat reward ultah:", error); } };
-        
-        // --- LOGIKA MEMBER & TRANSAKSI ---
-        const displayClaimableRewards = (memberPoints) => {
-            const container = document.getElementById('claimable-rewards');
-            const affordableRewards = allPointRewards.filter(r => r.points <= memberPoints);
-            container.innerHTML = affordableRewards.length > 0 
-                ? `<h4>Reward yang Bisa Diklaim:</h4>` + affordableRewards.map(r => `<div class="reward-item"><span><strong>${r.name}</strong> (${r.points} Poin)</span><button class="btn btn-secondary redeem-btn" data-name="${r.name}" data-points="${r.points}"><span class="btn-text">Redeem</span><span class="material-symbols-outlined">redeem</span><span class="spinner"></span></button></div>`).join('')
-                : '<h4>Reward yang Bisa Diklaim:</h4><p>Poin belum cukup untuk menukar reward.</p>';
-        };
-        
-        // --- LOGIKA STATISTIK ---
-        const fetchAllStatsData = async () => { try { const [membersSnap, transactionsSnap, redemptionsSnap] = await Promise.all([ getDocs(collection(db, "members")), getDocs(collection(db, "transactions")), getDocs(collection(db, "redemptions")) ]); allMembers = membersSnap.docs.map(d => ({ id: d.id, ...d.data(), tanggalDaftar: d.data().tanggalDaftar.toDate() })); allTransactions = transactionsSnap.docs.map(d => ({ id: d.id, ...d.data(), tanggal: d.data().tanggal.toDate() })); allRedemptions = redemptionsSnap.docs.map(d => ({ id: d.id, ...d.data(), tanggal: d.data().tanggal.toDate() })); } catch (error) { console.error("Gagal mengambil data statistik:", error); showStatus("Gagal memuat data statistik.", true); } };
-        const getDateRange = (period) => { const now = new Date(); const start = new Date(); const end = new Date(); if (period === 'today') { start.setHours(0, 0, 0, 0); end.setHours(23, 59, 59, 999); } else if (period === 'week') { const day = now.getDay(); const diff = now.getDate() - day + (day === 0 ? -6 : 1); start.setDate(diff); start.setHours(0, 0, 0, 0); end.setDate(start.getDate() + 6); end.setHours(23, 59, 59, 999); } else if (period === 'month') { start.setDate(1); start.setHours(0, 0, 0, 0); end.setMonth(now.getMonth() + 1); end.setDate(0); end.setHours(23, 59, 59, 999); } return { start, end }; };
-        const updateStatsUI = (period) => { let filteredMembers = allMembers; let filteredTransactions = allTransactions; let filteredRedemptions = allRedemptions; if (period !== 'all') { const { start, end } = getDateRange(period); filteredMembers = allMembers.filter(m => m.tanggalDaftar >= start && m.tanggalDaftar <= end); filteredTransactions = allTransactions.filter(t => t.tanggal >= start && t.tanggal <= end); filteredRedemptions = allRedemptions.filter(r => r.tanggal >= start && r.tanggal <= end); } const visitingMemberIds = new Set(filteredTransactions.map(t => t.memberId)); document.getElementById('stat-total-members').textContent = allMembers.length; document.getElementById('stat-new-members').textContent = filteredMembers.length; document.getElementById('stat-visiting-members').textContent = visitingMemberIds.size; document.getElementById('stat-redeemed-rewards').textContent = filteredRedemptions.length; updateInfoSourceChart(); };
-        const updateInfoSourceChart = () => { const sourceCounts = allMembers.reduce((acc, member) => { const source = member.sumberInfo || 'Tidak Diketahui'; acc[source] = (acc[source] || 0) + 1; return acc; }, {}); const labels = Object.keys(sourceCounts); const data = Object.values(sourceCounts); if (infoSourceChart) { infoSourceChart.data.labels = labels; infoSourceChart.data.datasets[0].data = data; infoSourceChart.update(); } updateInfoSourceList(sourceCounts); };
-        const initializeChart = () => { const ctx = document.getElementById('info-source-chart').getContext('2d'); if (infoSourceChart) infoSourceChart.destroy(); infoSourceChart = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [{ label: 'Sumber Info', data: [], backgroundColor: ['#00796B', '#F57C00', '#4CAF50', '#FFC107', '#2196F3'], hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false } }); };
-        
-        // --- LOGIKA MANAJEMEN SEMUA MEMBER ---
-        const loadAndRenderAllMembers = async () => {
-            const listEl = document.getElementById('all-members-list');
-            listEl.innerHTML = '<li>Memuat data...</li>';
-            try {
-                const membersSnap = await getDocs(collection(db, "members"));
-                fullMemberList = membersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderMemberList(fullMemberList);
-            } catch (error) {
-                listEl.innerHTML = '<li>Gagal memuat data.</li>';
-                console.error("Error loading all members:", error);
+    // --- REWARD LIST RENDER ---
+    const renderList = (listId, items, nameField, pointsField = null) => {
+        const listEl = document.getElementById(listId);
+        if (!listEl) return;
+        if (!items.length){
+            listEl.innerHTML = `<li>Belum ada reward ditambahkan.</li>`;
+            return;
+        }
+        listEl.innerHTML = items.map(item => `
+            <li>
+                <span><strong>${item[nameField]}</strong>${pointsField ? ` - ${item[pointsField]} Poin` : ''}</span>
+                <button class="btn btn-danger delete-reward-btn" data-id="${item.id}" data-type="${pointsField ? 'points' : 'birthday'}">
+                    <span class="btn-text">Hapus</span>
+                    <span class="spinner"></span>
+                </button>
+            </li>
+        `).join('');
+    };
+
+    const fetchPointRewards = async () => {
+        try{
+            const snapshot = await getDocs(collection(db,"rewards"));
+            allPointRewards = snapshot.docs.map(d => ({ id:d.id, ...d.data() }));
+            renderList('point-reward-list', allPointRewards, 'name', 'points');
+        }catch(err){ console.error("Gagal memuat reward poin:", err); }
+    };
+
+    const fetchBirthdayRewards = async () => {
+        try{
+            const snapshot = await getDocs(collection(db,"birthdayRewards"));
+            allBirthdayRewards = snapshot.docs.map(d => ({ id:d.id, ...d.data() }));
+            renderList('birthday-reward-list', allBirthdayRewards, 'name');
+        }catch(err){ console.error("Gagal memuat reward ultah:", err); }
+    };
+
+    // --- CLAIMABLE REWARDS (FIX: isi lengkap & fallback jelas) ---
+    const displayClaimableRewards = (memberPoints) => {
+        const container = document.getElementById('claimable-rewards');
+        const affordableRewards = allPointRewards.filter(r => (r.points || 0) <= (memberPoints || 0));
+        container.innerHTML = affordableRewards.length > 0
+            ? `<h4>Reward yang Bisa Diklaim:</h4>` + affordableRewards.map(r => `
+                <div class="reward-item">
+                    <span><strong>${r.name}</strong> (${r.points} Poin)</span>
+                    <button class="btn btn-secondary redeem-btn" data-name="${r.name}" data-points="${r.points}">
+                        <span class="btn-text">Redeem</span>
+                        <span class="material-symbols-outlined">redeem</span>
+                        <span class="spinner"></span>
+                    </button>
+                </div>
+              `).join('')
+            : '<h4>Reward yang Bisa Diklaim:</h4><p>Poin belum cukup untuk menukar reward.</p>';
+    };
+
+    // --- STATISTIK ---
+    const fetchAllStatsData = async () => {
+        try{
+            const [membersSnap, transactionsSnap, redemptionsSnap] = await Promise.all([
+                getDocs(collection(db,"members")),
+                getDocs(collection(db,"transactions")),
+                getDocs(collection(db,"redemptions"))
+            ]);
+            allMembers = membersSnap.docs.map(d => ({ id:d.id, ...d.data(), tanggalDaftar: d.data().tanggalDaftar?.toDate?.() || new Date(d.data().tanggalDaftar) }));
+            allTransactions = transactionsSnap.docs.map(d => ({ id:d.id, ...d.data(), tanggal: d.data().tanggal?.toDate?.() || new Date(d.data().tanggal) }));
+            allRedemptions = redemptionsSnap.docs.map(d => ({ id:d.id, ...d.data(), tanggal: d.data().tanggal?.toDate?.() || new Date(d.data().tanggal) }));
+        }catch(err){
+            console.error("Gagal mengambil data statistik:", err);
+            showStatus("Gagal memuat data statistik.", true);
+        }
+    };
+
+    const getDateRange = (period) => {
+        const now = new Date();
+        const start = new Date(now), end = new Date(now);
+        if (period === 'today'){
+            start.setHours(0,0,0,0); end.setHours(23,59,59,999);
+        }else if (period === 'week'){
+            const day = (now.getDay() + 6) % 7; // Senin=0
+            start.setDate(now.getDate() - day);
+            start.setHours(0,0,0,0);
+            end.setTime(start.getTime() + 6*24*60*60*1000);
+            end.setHours(23,59,59,999);
+        }else if (period === 'month'){
+            start.setDate(1); start.setHours(0,0,0,0);
+            end.setMonth(now.getMonth()+1,0); end.setHours(23,59,59,999);
+        }
+        return { start, end };
+    };
+
+    const updateStatsUI = (period) => {
+        let filteredMembers = allMembers;
+        let filteredTransactions = allTransactions;
+        let filteredRedemptions = allRedemptions;
+        if (period !== 'all'){
+            const { start, end } = getDateRange(period);
+            filteredMembers = allMembers.filter(m => m.tanggalDaftar >= start && m.tanggalDaftar <= end);
+            filteredTransactions = allTransactions.filter(t => t.tanggal >= start && t.tanggal <= end);
+            filteredRedemptions = allRedemptions.filter(r => r.tanggal >= start && r.tanggal <= end);
+        }
+        const visitingMemberIds = new Set(filteredTransactions.map(t => t.memberId));
+
+        document.getElementById('stat-total-members').textContent   = allMembers.length;
+        document.getElementById('stat-new-members').textContent     = filteredMembers.length;
+        document.getElementById('stat-visiting-members').textContent= visitingMemberIds.size;
+        document.getElementById('stat-redeemed-rewards').textContent= filteredRedemptions.length;
+
+        updateInfoSourceChart();
+    };
+
+    const initializeChart = () => {
+        const ctx = document.getElementById('info-source-chart').getContext('2d');
+        if (infoSourceChart) infoSourceChart.destroy();
+        infoSourceChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels: [], datasets: [{ label:'Sumber Info', data: [], backgroundColor: ['#00796B','#F57C00','#4CAF50','#FFC107','#2196F3','#8e44ad','#2ecc71'], hoverOffset:4 }] },
+            options: {
+                responsive:true,
+                maintainAspectRatio:false,
+                plugins:{ legend:{ position:'bottom' } }
             }
-        };
-        
-        const renderMemberList = (membersToRender) => {
-            const listEl = document.getElementById('all-members-list');
-            if (membersToRender.length === 0) {
-                listEl.innerHTML = '<li>Tidak ada member yang cocok dengan pencarian.</li>';
-                return;
-            }
-            listEl.innerHTML = membersToRender.map(member => {
-                const formattedNumber = formatPhoneNumber(member.nomorHp);
-                const birthdayRewardName = getBirthdayReward(member.tanggalLahir);
-                const birthdayMessage = birthdayRewardName
-                    ? `Halo ${member.nama}, selamat ulang tahun! Dolan Sawah punya penawaran spesial untukmu: *${birthdayRewardName}*. Langsung datang ke resto dan tukar reward spesialmu! 🎉🥳`
-                    : `Halo ${member.nama}, ada info terbaru nih dari Dolan Sawah!`;
-                const whatsappLink = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(birthdayMessage)}`;
-                
-                return `
+        });
+    };
+
+    const updateInfoSourceChart = () => {
+        const sourceCounts = allMembers.reduce((acc, member) => {
+            const source = member.sumberInfo || 'Tidak Diketahui';
+            acc[source] = (acc[source] || 0) + 1;
+            return acc;
+        }, {});
+        const labels = Object.keys(sourceCounts);
+        const data   = Object.values(sourceCounts);
+        if (infoSourceChart){
+            infoSourceChart.data.labels = labels;
+            infoSourceChart.data.datasets[0].data = data;
+            infoSourceChart.update();
+        }
+        updateInfoSourceList(sourceCounts);
+    };
+
+    // --- SEMUA MEMBER ---
+    const loadAndRenderAllMembers = async () => {
+        const listEl = document.getElementById('all-members-list');
+        listEl.innerHTML = '<li>Memuat data...</li>';
+        try{
+            const membersSnap = await getDocs(collection(db,"members"));
+            fullMemberList = membersSnap.docs.map(d => ({ id:d.id, ...d.data() }));
+            renderMemberList(fullMemberList);
+        }catch(err){
+            listEl.innerHTML = '<li>Gagal memuat data.</li>';
+            console.error("Error loading all members:", err);
+        }
+    };
+
+    const renderMemberList = (membersToRender) => {
+        const listEl = document.getElementById('all-members-list');
+        if (!membersToRender.length){
+            listEl.innerHTML = '<li>Tidak ada member yang cocok dengan pencarian.</li>';
+            return;
+        }
+        listEl.innerHTML = membersToRender.map(member => {
+            const formattedNumber = formatPhoneNumber(member.nomorHp);
+            const birthdayRewardName = getBirthdayReward(member.tanggalLahir);
+            const birthdayMessage = birthdayRewardName
+                ? `Halo ${member.nama}, selamat ulang tahun! Dolan Sawah punya penawaran spesial untukmu: *${birthdayRewardName}*. Langsung datang ke resto dan tukar reward spesialmu! 🎉🥳`
+                : `Halo ${member.nama}, ada info terbaru nih dari Dolan Sawah!`;
+            const whatsappLink = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(birthdayMessage)}`;
+
+            return `
                 <li class="member-list-item" id="member-item-${member.id}">
                     <div class="member-list-item-info">
                         <strong>${member.nama}</strong>
@@ -441,303 +636,323 @@
                     </div>
                 </li>
             `;
-            }).join('');
-        };
+        }).join('');
+    };
 
-        // --- INISIALISASI APLIKASI ---
-        document.addEventListener('DOMContentLoaded', async () => {
-            setupNavigation();
-            
-            document.getElementById('search-form').addEventListener('submit', async e => {
-                e.preventDefault(); 
-                const button = e.target.querySelector('button'); 
-                showLoading(button, true); 
-                try { 
-                    const nomorHp = document.getElementById('search-hp').value.trim(); 
-                    if (!nomorHp) throw new Error("Nomor HP harus diisi."); 
-                    const docRef = doc(db, "members", nomorHp); 
-                    const docSnap = await getDoc(docRef); 
-                    if (docSnap.exists()) { 
-                        const member = docSnap.data(); 
-                        currentMemberId = member.nomorHp; 
-                        document.getElementById('info-nama').textContent = member.nama; 
-                        document.getElementById('info-poin').textContent = member.poin || 0;
-                        displayClaimableRewards(member.poin || 0);
-                        const birthdayRewardName = getBirthdayReward(member.tanggalLahir);
-                        if (birthdayRewardName) {
-                            birthdayNotification.textContent = `🎉 Selamat ulang tahun! Member ini berhak mendapatkan reward spesial: ${birthdayRewardName}.`;
-                            birthdayNotification.classList.add('show');
-                            document.getElementById('whatsapp-member-btn').href = `https://wa.me/${formatPhoneNumber(member.nomorHp)}?text=${encodeURIComponent(`Halo ${member.nama}, selamat ulang tahun! Dolan Sawah punya penawaran spesial untukmu: *${birthdayRewardName}*. Langsung datang ke resto dan tukar reward spesialmu! 🎉🥳`)}`;
-                        } else {
-                            birthdayNotification.classList.remove('show');
-                            document.getElementById('whatsapp-member-btn').href = `https://wa.me/${formatPhoneNumber(member.nomorHp)}`;
-                        }
-                        memberDetailOverlay.classList.add('visible'); 
-                        document.getElementById('transaction-amount').focus(); 
-                    } else { 
-                        showStatus(`Member dengan No. HP ${nomorHp} tidak ditemukan.`, true); 
-                    } 
-                } catch (error) { 
-                    showStatus(error.message, true); 
-                } finally { 
-                    showLoading(button, false); 
-                } 
-            });
+    // --- INIT ---
+    document.addEventListener('DOMContentLoaded', async () => {
+        setupNavigation();
 
-            document.getElementById('register-form').addEventListener('submit', async e => { 
-                e.preventDefault(); 
-                const button = e.target.querySelector('button'); 
-                showLoading(button, true); 
-                try { 
-                    const form = e.target; 
-                    const nomorHp = form.querySelector('#nomor-hp').value.trim(); 
-                    const docRef = doc(db, "members", nomorHp); 
-                    const docSnap = await getDoc(docRef); 
-                    if(docSnap.exists()){ 
-                        throw new Error("Nomor HP ini sudah terdaftar sebagai member."); 
-                    } 
-                    await setDoc(docRef, { nama: form.querySelector('#nama').value, alamat: form.querySelector('#alamat').value, nomorHp: nomorHp, tanggalLahir: form.querySelector('#tanggal-lahir').value, sumberInfo: form.querySelector('#sumber-info').value, poin: 0, tanggalDaftar: new Date() }); 
-                    showStatus("Member baru berhasil didaftarkan!"); 
-                    form.reset(); 
-                    document.getElementById('nav-search').click(); 
-                    await fetchAllStatsData(); 
-                } catch (error) { 
-                    showStatus(error.message, true); 
-                } finally { 
-                    showLoading(button, false); 
-                } 
-            });
+        // Cari member
+        document.getElementById('search-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const button = e.target.querySelector('button');
+            showLoading(button, true);
+            try{
+                const nomorHp = document.getElementById('search-hp').value.trim();
+                if (!nomorHp) throw new Error("Nomor HP harus diisi.");
+                const docRef  = doc(db,"members", nomorHp);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()){
+                    const member = docSnap.data();
+                    currentMemberId = member.nomorHp;
+                    document.getElementById('info-nama').textContent = member.nama;
+                    const currPoint = member.poin || 0;
+                    document.getElementById('info-poin').textContent = currPoint;
+                    displayClaimableRewards(currPoint);
 
-            document.getElementById('add-transaction-form').addEventListener('submit', async e => { 
-                e.preventDefault(); 
-                const button = e.target.querySelector('button'); 
-                showLoading(button, true); 
-                try { 
-                    const amount = parseInt(e.target.querySelector('#transaction-amount').value); 
-                    if (!amount || !currentMemberId) throw new Error("Masukkan nominal valid."); 
-                    
-                    const addedPoints = Math.floor(amount / 1000);
-                    const memberDocRef = doc(db, "members", currentMemberId);
-
-                    await updateDoc(memberDocRef, {
-                        poin: increment(addedPoints)
-                    });
-
-                    await addDoc(collection(db, "transactions"), { 
-                        memberId: currentMemberId, 
-                        nominal: amount, 
-                        tanggal: new Date(),
-                        poinBertambah: addedPoints
-                    }); 
-                    
-                    const poinDisplay = document.getElementById('info-poin');
-                    const currentPoints = parseInt(poinDisplay.textContent) || 0;
-                    const newPoints = currentPoints + addedPoints;
-                    poinDisplay.textContent = newPoints;
-                    displayClaimableRewards(newPoints);
-
-                    showStatus("Transaksi berhasil disimpan! Poin telah diupdate."); 
-                    e.target.reset(); 
-                } catch (error) { 
-                    showStatus(error.message, true); 
-                } finally { 
-                    showLoading(button, false); 
-                } 
-            });
-
-            document.getElementById('member-detail-overlay').addEventListener('click', async e => { 
-                const button = e.target.closest('.redeem-btn'); 
-                if (button) { 
-                    const { name, points } = button.dataset; 
-                    const pointsCost = parseInt(points); 
-                    if (confirm(`Tukar ${pointsCost} poin dengan "${name}"? Poin member akan dikurangi.`)) { 
-                        showLoading(button, true); 
-                        try { 
-                            const memberDocRef = doc(db, "members", currentMemberId); 
-                            await updateDoc(memberDocRef, { poin: increment(-pointsCost) }); 
-                            await addDoc(collection(db, "redemptions"), { memberId: currentMemberId, rewardName: name, pointsSpent: pointsCost, tanggal: new Date() }); 
-                            const poinDisplay = document.getElementById('info-poin'); 
-                            const newPoints = parseInt(poinDisplay.textContent) - pointsCost; 
-                            poinDisplay.textContent = newPoints; 
-                            displayClaimableRewards(newPoints); 
-                            showStatus(`Poin berhasil ditukar dengan ${name}!`); 
-                            await fetchAllStatsData(); 
-                        } catch (error) { 
-                            showStatus("Gagal menukar poin.", true); 
-                        } finally { 
-                            showLoading(button, false); 
-                        } 
-                    } 
-                } 
-            });
-
-            backToSearchBtn.addEventListener('click', () => { 
-                memberDetailOverlay.classList.remove('visible'); 
-                document.getElementById('search-form').reset(); 
-                document.getElementById('search-hp').focus(); 
-                birthdayNotification.classList.remove('show'); 
-            });
-
-            document.getElementById('add-point-reward-form').addEventListener('submit', async e => { 
-                e.preventDefault(); 
-                const button = e.target.querySelector('button'); 
-                showLoading(button, true); 
-                try { 
-                    const name = e.target.querySelector('#reward-name').value; 
-                    const points = parseInt(e.target.querySelector('#reward-points').value); 
-                    if (!name || !points) throw new Error("Nama dan Poin Reward harus diisi."); 
-                    await addDoc(collection(db, "rewards"), { name, points }); 
-                    showStatus("Reward poin berhasil ditambahkan!"); 
-                    e.target.reset(); 
-                    await fetchPointRewards(); 
-                } catch (error) { 
-                    showStatus(error.message, true); 
-                } finally { 
-                    showLoading(button, false); 
-                } 
-            });
-
-            document.getElementById('add-birthday-reward-form').addEventListener('submit', async e => { 
-                e.preventDefault(); 
-                const button = e.target.querySelector('button'); 
-                showLoading(button, true); 
-                try { 
-                    const name = e.target.querySelector('#birthday-reward-name').value; 
-                    if (!name) throw new Error("Nama Reward harus diisi."); 
-                    await addDoc(collection(db, "birthdayRewards"), { name }); 
-                    showStatus("Reward ultah berhasil ditambahkan!"); 
-                    e.target.reset(); 
-                    await fetchBirthdayRewards(); 
-                } catch (error) { 
-                    showStatus(error.message, true); 
-                } finally { 
-                    showLoading(button, false); 
-                } 
-            });
-
-            document.getElementById('rewards-section').addEventListener('click', async e => { 
-                const button = e.target.closest('.delete-reward-btn'); 
-                if (button) { 
-                    if (confirm("Yakin ingin menghapus reward ini?")) { 
-                        showLoading(button, true); 
-                        try { 
-                            const { id, type } = button.dataset; 
-                            const collectionName = type === 'points' ? 'rewards' : 'birthdayRewards'; 
-                            await deleteDoc(doc(db, collectionName, id)); 
-                            showStatus("Reward berhasil dihapus."); 
-                            type === 'points' ? await fetchPointRewards() : await fetchBirthdayRewards(); 
-                        } catch (error) { 
-                            showStatus("Gagal menghapus reward.", true); 
-                        } 
-                    } 
-                } 
-            });
-
-            document.getElementById('btn-show-point-rewards').addEventListener('click', () => { document.getElementById('reward-options').classList.add('hidden'); document.getElementById('point-rewards-container').classList.remove('hidden'); });
-            document.getElementById('btn-show-birthday-rewards').addEventListener('click', () => { document.getElementById('reward-options').classList.add('hidden'); document.getElementById('birthday-rewards-container').classList.remove('hidden'); });
-            document.querySelectorAll('.back-to-reward-options').forEach(button => { button.addEventListener('click', () => { document.getElementById('reward-options').classList.remove('hidden'); document.getElementById('point-rewards-container').classList.add('hidden'); document.getElementById('birthday-rewards-container').classList.add('hidden'); }); });
-
-            document.querySelector('.stats-filter').addEventListener('click', (e) => { 
-                if (e.target.tagName === 'BUTTON') { 
-                    document.querySelectorAll('.stats-filter button').forEach(btn => btn.classList.remove('active')); 
-                    e.target.classList.add('active'); 
-                    updateStatsUI(e.target.dataset.period); 
-                } 
-            });
-
-            document.getElementById('show-all-members-btn').addEventListener('click', () => { 
-                passwordPromptOverlay.classList.add('visible'); 
-                document.getElementById('admin-password').focus(); 
-            });
-            document.getElementById('cancel-password-btn').addEventListener('click', () => passwordPromptOverlay.classList.remove('visible'));
-
-            document.getElementById('password-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const password = document.getElementById('admin-password').value;
-                if (password === '654321') {
-                    passwordPromptOverlay.classList.remove('visible');
-                    e.target.reset();
-                    await loadAndRenderAllMembers();
-                    allMembersOverlay.classList.add('visible');
-                } else {
-                    showStatus("Password salah!", true);
-                }
-            });
-
-            document.getElementById('search-all-members-input').addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                const filtered = fullMemberList.filter(member => member.nomorHp.includes(searchTerm));
-                renderMemberList(filtered);
-            });
-            
-            document.getElementById('close-all-members-btn').addEventListener('click', () => allMembersOverlay.classList.remove('visible'));
-
-            document.getElementById('all-members-list').addEventListener('click', async (e) => {
-                const memberId = e.target.dataset.id;
-                if (e.target.classList.contains('delete-member-btn')) {
-                    if (confirm(`Yakin ingin menghapus member dengan HP ${memberId}? Data tidak bisa dikembalikan.`)) {
-                        try {
-                            await deleteDoc(doc(db, "members", memberId));
-                            showStatus("Member berhasil dihapus.", false);
-                            document.getElementById(`member-item-${memberId}`).remove();
-                            fullMemberList = fullMemberList.filter(m => m.id !== memberId);
-                            await fetchAllStatsData(); 
-                        } catch (error) {
-                            showStatus("Gagal menghapus member.", true);
-                            console.error("Delete error:", error);
-                        }
+                    const birthdayRewardName = getBirthdayReward(member.tanggalLahir);
+                    const waBase = `https://wa.me/${formatPhoneNumber(member.nomorHp)}`;
+                    if (birthdayRewardName){
+                        birthdayNotification.textContent = `🎉 Selamat ulang tahun! Member ini berhak mendapatkan reward spesial: ${birthdayRewardName}.`;
+                        birthdayNotification.classList.add('show');
+                        document.getElementById('whatsapp-member-btn').href =
+                            `${waBase}?text=${encodeURIComponent(`Halo ${member.nama}, selamat ulang tahun! Dolan Sawah punya penawaran spesial untukmu: *${birthdayRewardName}*. Langsung datang ke resto dan tukar reward spesialmu! 🎉🥳`)}`;
+                    }else{
+                        birthdayNotification.classList.remove('show');
+                        document.getElementById('whatsapp-member-btn').href = waBase;
                     }
-                } else if (e.target.classList.contains('edit-member-btn')) {
-                    const memberData = fullMemberList.find(m => m.id === memberId);
-                    if (memberData) {
-                        const form = document.getElementById('edit-member-form');
-                        form.querySelector('#edit-member-id').value = memberData.id;
-                        form.querySelector('#edit-nama').value = memberData.nama;
-                        form.querySelector('#edit-alamat').value = memberData.alamat;
-                        form.querySelector('#edit-nomor-hp').value = memberData.nomorHp;
-                        form.querySelector('#edit-tanggal-lahir').value = memberData.tanggalLahir;
-                        form.querySelector('#edit-sumber-info').value = memberData.sumberInfo;
-                        form.querySelector('#edit-poin').value = memberData.poin || 0;
-                        editMemberOverlay.classList.add('visible');
-                    }
+                    memberDetailOverlay.classList.add('visible');
+                    document.getElementById('transaction-amount').focus();
+                }else{
+                    showStatus(`Member dengan No. HP ${nomorHp} tidak ditemukan.`, true);
                 }
-            });
-
-            document.getElementById('cancel-edit-btn').addEventListener('click', () => editMemberOverlay.classList.remove('visible'));
-            
-            document.getElementById('edit-member-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const button = e.target.querySelector('button[type="submit"]');
-                showLoading(button, true);
-                const memberId = document.getElementById('edit-member-id').value;
-                const updatedData = {
-                    nama: document.getElementById('edit-nama').value,
-                    alamat: document.getElementById('edit-alamat').value,
-                    tanggalLahir: document.getElementById('edit-tanggal-lahir').value,
-                    sumberInfo: document.getElementById('edit-sumber-info').value,
-                    poin: parseInt(document.getElementById('edit-poin').value)
-                };
-                try {
-                    const memberDocRef = doc(db, "members", memberId);
-                    await updateDoc(memberDocRef, updatedData);
-                    showStatus("Data member berhasil diupdate.", false);
-                    editMemberOverlay.classList.remove('visible');
-                    await loadAndRenderAllMembers(); 
-                    await fetchAllStatsData(); 
-                } catch(error) {
-                    showStatus("Gagal mengupdate data.", true);
-                    console.error("Update error: ", error);
-                } finally {
-                    showLoading(button, false);
-                }
-            });
-
-            await fetchPointRewards();
-            await fetchBirthdayRewards();
-            await fetchAllStatsData();
-            initializeChart();
-            updateStatsUI('today');
+            }catch(err){
+                showStatus(err.message || "Terjadi kesalahan.", true);
+            }finally{
+                showLoading(button, false);
+            }
         });
-    </script>
+
+        // Daftar member
+        document.getElementById('register-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const button = e.target.querySelector('button');
+            showLoading(button, true);
+            try{
+                const form = e.target;
+                const nomorHp = form.querySelector('#nomor-hp').value.trim();
+                const docRef  = doc(db,"members", nomorHp);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) throw new Error("Nomor HP ini sudah terdaftar sebagai member.");
+                await setDoc(docRef, {
+                    nama: form.querySelector('#nama').value,
+                    alamat: form.querySelector('#alamat').value,
+                    nomorHp,
+                    tanggalLahir: form.querySelector('#tanggal-lahir').value,
+                    sumberInfo: form.querySelector('#sumber-info').value,
+                    poin: 0,
+                    tanggalDaftar: new Date()
+                });
+                showStatus("Member baru berhasil didaftarkan!");
+                form.reset();
+                document.getElementById('nav-search').click();
+                await fetchAllStatsData();
+                updateStatsUI('today');
+            }catch(err){
+                showStatus(err.message || "Gagal mendaftar.", true);
+            }finally{
+                showLoading(button, false);
+            }
+        });
+
+        // Transaksi
+        document.getElementById('add-transaction-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const button = e.target.querySelector('button');
+            showLoading(button, true);
+            try{
+                const amount = parseInt(document.getElementById('transaction-amount').value, 10);
+                if (!amount || !currentMemberId) throw new Error("Masukkan nominal valid.");
+                await addDoc(collection(db,"transactions"), { memberId: currentMemberId, nominal: amount, tanggal: new Date() });
+                showStatus("Transaksi berhasil disimpan! Poin akan diupdate oleh sistem.");
+                e.target.reset();
+                memberDetailOverlay.classList.remove('visible');
+                await fetchAllStatsData();
+                updateStatsUI('today');
+            }catch(err){
+                showStatus(err.message || "Gagal menyimpan transaksi.", true);
+            }finally{
+                showLoading(button, false);
+            }
+        });
+
+        // Redeem reward
+        document.getElementById('member-detail-overlay').addEventListener('click', async e => {
+            const button = e.target.closest('.redeem-btn');
+            if (!button) return;
+            const { name, points } = button.dataset;
+            const pointsCost = parseInt(points, 10);
+            if (!confirm(`Tukar ${pointsCost} poin dengan "${name}"? Poin member akan dikurangi.`)) return;
+            showLoading(button, true);
+            try{
+                const memberDocRef = doc(db,"members", currentMemberId);
+                await updateDoc(memberDocRef, { poin: increment(-pointsCost) });
+                await addDoc(collection(db,"redemptions"), { memberId: currentMemberId, rewardName: name, pointsSpent: pointsCost, tanggal:new Date() });
+
+                // update UI langsung
+                const poinDisplay = document.getElementById('info-poin');
+                const newPoints = Math.max(0, (parseInt(poinDisplay.textContent,10) || 0) - pointsCost);
+                poinDisplay.textContent = newPoints;
+                displayClaimableRewards(newPoints);
+                showStatus(`Poin berhasil ditukar dengan ${name}!`);
+                await fetchAllStatsData();
+                updateStatsUI('today');
+            }catch(err){
+                showStatus("Gagal menukar poin.", true);
+            }finally{
+                showLoading(button, false);
+            }
+        });
+
+        backToSearchBtn.addEventListener('click', () => {
+            memberDetailOverlay.classList.remove('visible');
+            document.getElementById('search-form').reset();
+            document.getElementById('search-hp').focus();
+            birthdayNotification.classList.remove('show');
+        });
+
+        // Tambah reward
+        document.getElementById('add-point-reward-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const button = e.target.querySelector('button');
+            showLoading(button, true);
+            try{
+                const name = document.getElementById('reward-name').value.trim();
+                const points = parseInt(document.getElementById('reward-points').value, 10);
+                if (!name || !points) throw new Error("Nama dan Poin Reward harus diisi.");
+                await addDoc(collection(db,"rewards"), { name, points });
+                showStatus("Reward poin berhasil ditambahkan!");
+                e.target.reset();
+                await fetchPointRewards();
+            }catch(err){
+                showStatus(err.message || "Gagal menambah reward.", true);
+            }finally{
+                showLoading(button, false);
+            }
+        });
+
+        // Tambah reward ultah
+        document.getElementById('add-birthday-reward-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const button = e.target.querySelector('button');
+            showLoading(button, true);
+            try{
+                const name = document.getElementById('birthday-reward-name').value.trim();
+                if (!name) throw new Error("Nama Reward harus diisi.");
+                await addDoc(collection(db,"birthdayRewards"), { name });
+                showStatus("Reward ultah berhasil ditambahkan!");
+                e.target.reset();
+                await fetchBirthdayRewards();
+            }catch(err){
+                showStatus(err.message || "Gagal menambah reward ultah.", true);
+            }finally{
+                showLoading(button, false);
+            }
+        });
+
+        // Hapus reward
+        document.getElementById('rewards-section').addEventListener('click', async e => {
+            const button = e.target.closest('.delete-reward-btn');
+            if (!button) return;
+            if (!confirm("Yakin ingin menghapus reward ini?")) return;
+            showLoading(button, true);
+            try{
+                const { id, type } = button.dataset;
+                const collectionName = (type === 'points') ? 'rewards' : 'birthdayRewards';
+                await deleteDoc(doc(db, collectionName, id));
+                showStatus("Reward berhasil dihapus.");
+                (type === 'points') ? await fetchPointRewards() : await fetchBirthdayRewards();
+            }catch(err){
+                showStatus("Gagal menghapus reward.", true);
+            }finally{
+                showLoading(button, false);
+            }
+        });
+
+        // Toggle subsection reward
+        document.getElementById('btn-show-point-rewards').addEventListener('click', () => {
+            document.getElementById('reward-options').classList.add('hidden');
+            document.getElementById('point-rewards-container').classList.remove('hidden');
+        });
+        document.getElementById('btn-show-birthday-rewards').addEventListener('click', () => {
+            document.getElementById('reward-options').classList.add('hidden');
+            document.getElementById('birthday-rewards-container').classList.remove('hidden');
+        });
+        document.querySelectorAll('.back-to-reward-options').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('reward-options').classList.remove('hidden');
+                document.getElementById('point-rewards-container').classList.add('hidden');
+                document.getElementById('birthday-rewards-container').classList.add('hidden');
+            });
+        });
+
+        // Filter statistik
+        document.querySelector('.stats-filter').addEventListener('click', (e) => {
+            if (e.target.tagName !== 'BUTTON') return;
+            document.querySelectorAll('.stats-filter button').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            updateStatsUI(e.target.dataset.period);
+        });
+
+        // Akses semua member
+        document.getElementById('show-all-members-btn').addEventListener('click', () => {
+            passwordPromptOverlay.classList.add('visible');
+            document.getElementById('admin-password').focus();
+        });
+        document.getElementById('cancel-password-btn').addEventListener('click', () => passwordPromptOverlay.classList.remove('visible'));
+
+        document.getElementById('password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('admin-password').value;
+            if (password === '654321'){
+                passwordPromptOverlay.classList.remove('visible');
+                e.target.reset();
+                await loadAndRenderAllMembers();
+                allMembersOverlay.classList.add('visible');
+            }else{
+                showStatus("Password salah!", true);
+            }
+        });
+
+        document.getElementById('search-all-members-input').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = fullMemberList.filter(m => (m.nomorHp || '').toLowerCase().includes(term));
+            renderMemberList(filtered);
+        });
+        document.getElementById('close-all-members-btn').addEventListener('click', () => allMembersOverlay.classList.remove('visible'));
+
+        document.getElementById('all-members-list').addEventListener('click', async (e) => {
+            const target = e.target;
+            const memberId = target.dataset.id;
+            if (target.classList.contains('delete-member-btn')){
+                if (!confirm(`Yakin ingin menghapus member dengan HP ${memberId}? Data tidak bisa dikembalikan.`)) return;
+                try{
+                    await deleteDoc(doc(db,"members", memberId));
+                    showStatus("Member berhasil dihapus.");
+                    document.getElementById(`member-item-${memberId}`)?.remove();
+                    fullMemberList = fullMemberList.filter(m => m.id !== memberId);
+                    await fetchAllStatsData();
+                    updateStatsUI('today');
+                }catch(err){
+                    showStatus("Gagal menghapus member.", true);
+                    console.error("Delete error:", err);
+                }
+            }else if (target.classList.contains('edit-member-btn')){
+                const memberData = fullMemberList.find(m => m.id === memberId);
+                if (memberData){
+                    const form = document.getElementById('edit-member-form');
+                    form.querySelector('#edit-member-id').value = memberData.id;
+                    form.querySelector('#edit-nama').value = memberData.nama || '';
+                    form.querySelector('#edit-alamat').value = memberData.alamat || '';
+                    form.querySelector('#edit-nomor-hp').value = memberData.nomorHp || '';
+                    form.querySelector('#edit-tanggal-lahir').value = memberData.tanggalLahir || '';
+                    form.querySelector('#edit-sumber-info').value = memberData.sumberInfo || '';
+                    form.querySelector('#edit-poin').value = memberData.poin || 0;
+                    editMemberOverlay.classList.add('visible');
+                }
+            }
+        });
+
+        document.getElementById('cancel-edit-btn').addEventListener('click', () => editMemberOverlay.classList.remove('visible'));
+        document.getElementById('edit-member-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const button = e.target.querySelector('button[type="submit"]');
+            showLoading(button, true);
+            const memberId = document.getElementById('edit-member-id').value;
+            const updatedData = {
+                nama: document.getElementById('edit-nama').value,
+                alamat: document.getElementById('edit-alamat').value,
+                tanggalLahir: document.getElementById('edit-tanggal-lahir').value,
+                sumberInfo: document.getElementById('edit-sumber-info').value,
+                poin: parseInt(document.getElementById('edit-poin').value,10) || 0
+            };
+            try{
+                const memberDocRef = doc(db,"members", memberId);
+                await updateDoc(memberDocRef, updatedData);
+                showStatus("Data member berhasil diupdate.");
+                editMemberOverlay.classList.remove('visible');
+                await loadAndRenderAllMembers();
+                await fetchAllStatsData();
+                updateStatsUI('today');
+            }catch(err){
+                showStatus("Gagal mengupdate data.", true);
+                console.error("Update error:", err);
+            }finally{
+                showLoading(button, false);
+            }
+        });
+
+        // Init data + chart
+        await fetchPointRewards();
+        await fetchBirthdayRewards();
+        await fetchAllStatsData();
+        initializeChart();
+        updateStatsUI('today');
+
+        // Reflow chart ketika overlay / tab berubah ukuran
+        window.addEventListener('resize', () => { if (infoSourceChart) infoSourceChart.resize(); });
+    });
+</script>
 </body>
 </html>
