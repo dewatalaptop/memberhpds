@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Member - Dolan Sawah</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0');
@@ -33,7 +34,6 @@
         .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-size: 1em; }
         .form-group input:focus { border-color: var(--primary-color); outline: none; }
         
-        /* GAYA TOMBOL BARU */
         .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 1.1em; font-weight: 600; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .btn .material-symbols-outlined { font-size: 1.2em; }
         .btn-primary { background-color: var(--accent-color); color: var(--text-light); }
@@ -43,7 +43,6 @@
         .btn-danger { background-color: var(--danger-color); color: var(--text-light); }
         .btn-danger:hover { background-color: var(--danger-hover); }
         
-        /* GAYA INDIKATOR LOADING */
         .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: var(--text-light); border-radius: 50%; display: none; animation: spin 1s linear infinite; }
         .btn-secondary .spinner { border-color: rgba(0,0,0,0.2); border-top-color: var(--accent-color); }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -51,65 +50,30 @@
         .btn.loading .btn-text { display: none; }
         .btn.loading .spinner { display: block; }
 
-        /* GAYA NOTIFIKASI BARU */
         #status-message { padding: 15px; margin-top: 20px; border-radius: 8px; opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.3s ease; }
         #status-message.visible { opacity: 1; visibility: visible; transform: translateY(0); }
         #status-message.success { background-color: #DFF0D8; color: #3C763D; border: 1px solid #D6E9C6; }
         #status-message.error { background-color: #F2DEDE; color: #A94442; border: 1px solid #EBCCD1; }
 
-        /* GAYA OVERLAY BARU */
         .overlay { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 1000; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 20px; 
-            box-sizing: border-box; 
-            opacity: 0; 
-            visibility: hidden; 
-            transition: opacity 0.4s ease, visibility 0.4s ease;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px); z-index: 1000; display: flex; justify-content: center; align-items: center;
+            padding: 20px; box-sizing: border-box; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
         }
         .overlay.visible { opacity: 1; visibility: visible; }
         .overlay-content { 
-            background-color: var(--bg-white); 
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            width: calc(100% - 40px);
-            max-width: 700px;
-            max-height: 90vh; 
-            overflow-y: auto; 
-            transform: scale(0.9);
-            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            background-color: var(--bg-white); padding: 20px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            width: calc(100% - 40px); max-width: 700px; max-height: 90vh; overflow-y: auto; 
+            transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         .overlay.visible .overlay-content { transform: scale(1); }
         
-        /* Tombol kembali yang lebih menarik */
         #back-to-search-btn { 
-            background-color: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            font-size: 1em;
-            padding: 12px;
-            margin-bottom: 20px;
-            width: auto;
-            align-self: flex-start;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
+            background-color: transparent; border: 2px solid var(--primary-color); color: var(--primary-color);
+            font-size: 1em; padding: 12px; margin-bottom: 20px; width: auto; align-self: flex-start;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
         }
-        #back-to-search-btn:hover {
-            background-color: var(--primary-color);
-            color: var(--text-light);
-        }
+        #back-to-search-btn:hover { background-color: var(--primary-color); color: var(--text-light); }
 
         .poin { font-weight: 700; font-size: 2.5em; color: var(--primary-color); display: block; text-align: center; margin-bottom: 20px; }
         #claimable-rewards h4 { font-size: 1.1em; color: var(--text-dark); text-align: left; }
@@ -125,19 +89,34 @@
         #member-detail-overlay p { font-size: 1.1em; margin-bottom: 15px; }
         #member-detail-overlay strong { font-weight: 600; }
 
-        /* CSS untuk menyembunyikan/menampilkan sub-bagian reward */
-        .reward-subsection.hidden {
-            display: none;
+        .reward-subsection.hidden { display: none; }
+        .btn-options { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .reward-subsection { margin-top: 20px; }
+
+        /* --- GAYA BARU UNTUK STATISTIK --- */
+        .stats-filter { display: flex; justify-content: center; gap: 10px; margin: 20px 0 30px; }
+        .stats-filter button {
+            background-color: var(--bg-white); color: var(--primary-color); border: 2px solid var(--border-color);
+            padding: 10px 20px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.3s;
         }
-        .btn-options {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
+        .stats-filter button.active, .stats-filter button:hover { background-color: var(--primary-color); color: var(--text-light); border-color: var(--primary-color); }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .stat-card {
+            background-color: #FDFDFD; padding: 20px; border-radius: 12px;
+            border: 1px solid var(--border-color); text-align: center;
         }
-        .reward-subsection {
-            margin-top: 20px;
+        .stat-card h4 {
+            margin: 0 0 10px 0; font-size: 1.1em; font-weight: 600;
+            color: var(--text-dark); text-align: center; border-top: none; padding-top: 0;
         }
+        .stat-value {
+            font-size: 2.8em; font-weight: 700; color: var(--accent-color);
+            display: block; margin-bottom: 10px;
+        }
+        .chart-container { margin-top: 30px; padding: 20px; border-radius: 12px; background-color: #FDFDFD; border: 1px solid var(--border-color); }
+        .chart-container h3 { margin-bottom: 20px; }
+
     </style>
 </head>
 <body>
@@ -147,6 +126,7 @@
             <button id="nav-search" class="nav-button active">Cari Member</button>
             <button id="nav-register" class="nav-button">Daftar Member</button>
             <button id="nav-rewards" class="nav-button">Atur Reward</button>
+            <button id="nav-stats" class="nav-button">Statistik</button>
         </div>
         <main>
             <section id="search-section" class="section active">
@@ -203,6 +183,37 @@
                     <ul id="birthday-reward-list" class="reward-list-container"></ul>
                 </div>
             </section>
+            <section id="stats-section" class="section">
+                <h2>Statistik Member</h2>
+                <div class="stats-filter">
+                    <button class="active" data-period="today">Hari Ini</button>
+                    <button data-period="week">Minggu Ini</button>
+                    <button data-period="month">Bulan Ini</button>
+                    <button data-period="all">Semua</button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Total Member</h4>
+                        <span id="stat-total-members" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Member Baru</h4>
+                        <span id="stat-new-members" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Member Datang</h4>
+                        <span id="stat-visiting-members" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Reward Ditukar</h4>
+                        <span id="stat-redeemed-rewards" class="stat-value">0</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3>Sumber Informasi Member</h3>
+                    <canvas id="info-source-chart"></canvas>
+                </div>
+            </section>
             <div id="status-message"></div>
         </main>
     </div>
@@ -232,12 +243,16 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
+        // --- VARIABEL GLOBAL ---
         let allPointRewards = [];
         let currentMemberId = null;
+        let allMembers = [], allTransactions = [], allRedemptions = []; // Data untuk statistik
+        let infoSourceChart = null; // Instance Chart.js
 
         const memberDetailOverlay = document.getElementById('member-detail-overlay');
         const backToSearchBtn = document.getElementById('back-to-search-btn');
 
+        // --- FUNGSI HELPER ---
         const showLoading = (button, isLoading) => {
             button.disabled = isLoading;
             button.classList.toggle('loading', isLoading);
@@ -250,9 +265,20 @@
             div.classList.add('visible');
             setTimeout(() => { div.classList.remove('visible'); }, 4000);
         };
-
-        document.querySelectorAll('.nav-button').forEach(button => { button.addEventListener('click', () => { document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); const targetId = button.id.replace('nav-', '') + '-section'; document.querySelectorAll('.section').forEach(section => section.classList.toggle('active', section.id === targetId)); }); });
         
+        // --- NAVIGASI ---
+        document.querySelectorAll('.nav-button').forEach(button => { button.addEventListener('click', () => { 
+            document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active')); 
+            button.classList.add('active'); 
+            const targetId = button.id.replace('nav-', '') + '-section'; 
+            document.querySelectorAll('.section').forEach(section => section.classList.toggle('active', section.id === targetId));
+            // Jika tab statistik diklik, update data
+            if(targetId === 'stats-section') {
+                updateStatsUI('today');
+            }
+        }); });
+
+        // --- LOGIKA BAGIAN REWARD ---
         const renderList = (listId, items, nameField, pointsField = null) => {
             const listEl = document.getElementById(listId);
             listEl.innerHTML = items.length > 0
@@ -266,134 +292,143 @@
         document.getElementById('add-point-reward-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const name = e.target.querySelector('#reward-name').value; const points = parseInt(e.target.querySelector('#reward-points').value); if (!name || !points) throw new Error("Nama dan Poin Reward harus diisi."); await addDoc(collection(db, "rewards"), { name, points }); showStatus("Reward poin berhasil ditambahkan!"); e.target.reset(); await fetchPointRewards(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
         document.getElementById('add-birthday-reward-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const name = e.target.querySelector('#birthday-reward-name').value; if (!name) throw new Error("Nama Reward harus diisi."); await addDoc(collection(db, "birthdayRewards"), { name }); showStatus("Reward ultah berhasil ditambahkan!"); e.target.reset(); await fetchBirthdayRewards(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
         
-        document.getElementById('rewards-section').addEventListener('click', async e => {
-            const button = e.target.closest('.delete-reward-btn');
-            if (button) {
-                if (confirm("Yakin ingin menghapus reward ini?")) {
-                    showLoading(button, true);
-                    try {
-                        const { id, type } = button.dataset;
-                        const collectionName = type === 'points' ? 'rewards' : 'birthdayRewards';
-                        await deleteDoc(doc(db, collectionName, id));
-                        showStatus("Reward berhasil dihapus.");
-                        type === 'points' ? await fetchPointRewards() : await fetchBirthdayRewards();
-                    } catch (error) { showStatus("Gagal menghapus reward.", true); } 
-                }
-            }
-        });
+        document.getElementById('rewards-section').addEventListener('click', async e => { const button = e.target.closest('.delete-reward-btn'); if (button) { if (confirm("Yakin ingin menghapus reward ini?")) { showLoading(button, true); try { const { id, type } = button.dataset; const collectionName = type === 'points' ? 'rewards' : 'birthdayRewards'; await deleteDoc(doc(db, collectionName, id)); showStatus("Reward berhasil dihapus."); type === 'points' ? await fetchPointRewards() : await fetchBirthdayRewards(); } catch (error) { showStatus("Gagal menghapus reward.", true); } } } });
 
-        // Logika baru untuk halaman 'Atur Reward'
-        const showRewardOptions = () => {
-            document.getElementById('reward-options').classList.remove('hidden');
-            document.getElementById('point-rewards-container').classList.add('hidden');
-            document.getElementById('birthday-rewards-container').classList.add('hidden');
-        };
-        document.getElementById('btn-show-point-rewards').addEventListener('click', () => {
-            document.getElementById('reward-options').classList.add('hidden');
-            document.getElementById('point-rewards-container').classList.remove('hidden');
-        });
-        document.getElementById('btn-show-birthday-rewards').addEventListener('click', () => {
-            document.getElementById('reward-options').classList.add('hidden');
-            document.getElementById('birthday-rewards-container').classList.remove('hidden');
-        });
-        document.querySelectorAll('.back-to-reward-options').forEach(button => {
-            button.addEventListener('click', showRewardOptions);
-        });
+        const showRewardOptions = () => { document.getElementById('reward-options').classList.remove('hidden'); document.getElementById('point-rewards-container').classList.add('hidden'); document.getElementById('birthday-rewards-container').classList.add('hidden'); };
+        document.getElementById('btn-show-point-rewards').addEventListener('click', () => { document.getElementById('reward-options').classList.add('hidden'); document.getElementById('point-rewards-container').classList.remove('hidden'); });
+        document.getElementById('btn-show-birthday-rewards').addEventListener('click', () => { document.getElementById('reward-options').classList.add('hidden'); document.getElementById('birthday-rewards-container').classList.remove('hidden'); });
+        document.querySelectorAll('.back-to-reward-options').forEach(button => { button.addEventListener('click', showRewardOptions); });
 
+        // --- LOGIKA BAGIAN MEMBER & TRANSAKSI ---
         const displayClaimableRewards = (memberPoints) => {
             const container = document.getElementById('claimable-rewards');
             const affordableRewards = allPointRewards.filter(r => r.points <= memberPoints);
-            if (affordableRewards.length === 0) {
-                container.innerHTML = '<h4>Reward yang Bisa Diklaim:</h4><p>Poin belum cukup untuk menukar reward.</p>';
-                return;
-            }
-            container.innerHTML = `<h4>Reward yang Bisa Diklaim:</h4>` +
-                affordableRewards.map(r => `<div class="reward-item"><span><strong>${r.name}</strong> (${r.points} Poin)</span><button class="btn btn-secondary redeem-btn" data-name="${r.name}" data-points="${r.points}"><span class="btn-text">Redeem</span><span class="material-symbols-outlined">redeem</span><span class="spinner"></span></button></div>`).join('');
+            container.innerHTML = affordableRewards.length > 0 
+                ? `<h4>Reward yang Bisa Diklaim:</h4>` + affordableRewards.map(r => `<div class="reward-item"><span><strong>${r.name}</strong> (${r.points} Poin)</span><button class="btn btn-secondary redeem-btn" data-name="${r.name}" data-points="${r.points}"><span class="btn-text">Redeem</span><span class="material-symbols-outlined">redeem</span><span class="spinner"></span></button></div>`).join('')
+                : '<h4>Reward yang Bisa Diklaim:</h4><p>Poin belum cukup untuk menukar reward.</p>';
         };
 
-        document.getElementById('search-form').addEventListener('submit', async e => {
-            e.preventDefault();
-            const button = e.target.querySelector('button');
-            showLoading(button, true);
-            try {
-                const nomorHp = document.getElementById('search-hp').value.trim();
-                if (!nomorHp) throw new Error("Nomor HP harus diisi.");
-                const docRef = doc(db, "members", nomorHp);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const member = docSnap.data();
-                    currentMemberId = member.nomorHp;
-                    document.getElementById('info-nama').textContent = member.nama;
-                    document.getElementById('info-poin').textContent = member.poin || 0;
-                    displayClaimableRewards(member.poin || 0);
-                    memberDetailOverlay.classList.add('visible');
-                    document.getElementById('transaction-amount').focus();
-                } else { showStatus(`Member dengan No. HP ${nomorHp} tidak ditemukan.`, true); }
-            } catch (error) { showStatus(error.message, true); } 
-            finally { showLoading(button, false); }
-        });
+        document.getElementById('search-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const nomorHp = document.getElementById('search-hp').value.trim(); if (!nomorHp) throw new Error("Nomor HP harus diisi."); const docRef = doc(db, "members", nomorHp); const docSnap = await getDoc(docRef); if (docSnap.exists()) { const member = docSnap.data(); currentMemberId = member.nomorHp; document.getElementById('info-nama').textContent = member.nama; document.getElementById('info-poin').textContent = member.poin || 0; displayClaimableRewards(member.poin || 0); memberDetailOverlay.classList.add('visible'); document.getElementById('transaction-amount').focus(); } else { showStatus(`Member dengan No. HP ${nomorHp} tidak ditemukan.`, true); } } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
         
-        document.getElementById('register-form').addEventListener('submit', async e => {
-            e.preventDefault();
-            const button = e.target.querySelector('button');
-            showLoading(button, true);
-            try {
-                const form = e.target;
-                const nomorHp = form.querySelector('#nomor-hp').value.trim();
-                await setDoc(doc(db, "members", nomorHp), { nama: form.querySelector('#nama').value, alamat: form.querySelector('#alamat').value, nomorHp: nomorHp, tanggalLahir: form.querySelector('#tanggal-lahir').value, sumberInfo: form.querySelector('#sumber-info').value, poin: 0, tanggalDaftar: new Date() });
-                showStatus("Member baru berhasil didaftarkan!");
-                form.reset();
-                document.getElementById('nav-search').click();
-            } catch (error) { showStatus("Gagal mendaftarkan member.", true); }
-            finally { showLoading(button, false); }
-        });
+        document.getElementById('register-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const form = e.target; const nomorHp = form.querySelector('#nomor-hp').value.trim(); await setDoc(doc(db, "members", nomorHp), { nama: form.querySelector('#nama').value, alamat: form.querySelector('#alamat').value, nomorHp: nomorHp, tanggalLahir: form.querySelector('#tanggal-lahir').value, sumberInfo: form.querySelector('#sumber-info').value, poin: 0, tanggalDaftar: new Date() }); showStatus("Member baru berhasil didaftarkan!"); form.reset(); document.getElementById('nav-search').click(); await fetchAllStatsData(); } catch (error) { showStatus("Gagal mendaftarkan member.", true); } finally { showLoading(button, false); } });
 
-        document.getElementById('add-transaction-form').addEventListener('submit', async e => {
-            e.preventDefault();
-            const button = e.target.querySelector('button');
-            showLoading(button, true);
-            try {
-                const amount = parseInt(e.target.querySelector('#transaction-amount').value);
-                if (!amount || !currentMemberId) throw new Error("Masukkan nominal valid.");
-                await addDoc(collection(db, "transactions"), { memberId: currentMemberId, nominal: amount, tanggal: new Date() });
-                showStatus("Transaksi berhasil disimpan! Poin akan diupdate oleh sistem.");
-                e.target.reset();
-                memberDetailOverlay.classList.remove('visible');
-            } catch (error) { showStatus(error.message, true); }
-            finally { showLoading(button, false); }
-        });
+        document.getElementById('add-transaction-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const amount = parseInt(e.target.querySelector('#transaction-amount').value); if (!amount || !currentMemberId) throw new Error("Masukkan nominal valid."); await addDoc(collection(db, "transactions"), { memberId: currentMemberId, nominal: amount, tanggal: new Date() }); showStatus("Transaksi berhasil disimpan! Poin akan diupdate oleh sistem."); e.target.reset(); memberDetailOverlay.classList.remove('visible'); await fetchAllStatsData(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
 
-        document.getElementById('member-detail-overlay').addEventListener('click', async e => {
-            const button = e.target.closest('.redeem-btn');
-            if (button) {
-                const { name, points } = button.dataset;
-                const pointsCost = parseInt(points);
-                if (confirm(`Tukar ${pointsCost} poin dengan "${name}"? Poin member akan dikurangi.`)) {
-                    showLoading(button, true);
-                    try {
-                        const memberDocRef = doc(db, "members", currentMemberId);
-                        await updateDoc(memberDocRef, { poin: increment(-pointsCost) });
-                        await addDoc(collection(db, "redemptions"), { memberId: currentMemberId, rewardName: name, pointsSpent: pointsCost, tanggal: new Date() });
-                        const poinDisplay = document.getElementById('info-poin');
-                        const newPoints = parseInt(poinDisplay.textContent) - pointsCost;
-                        poinDisplay.textContent = newPoints;
-                        displayClaimableRewards(newPoints);
-                        showStatus(`Poin berhasil ditukar dengan ${name}!`);
-                    } catch (error) { showStatus("Gagal menukar poin.", true); }
-                    finally { showLoading(button, false); }
-                }
+        document.getElementById('member-detail-overlay').addEventListener('click', async e => { const button = e.target.closest('.redeem-btn'); if (button) { const { name, points } = button.dataset; const pointsCost = parseInt(points); if (confirm(`Tukar ${pointsCost} poin dengan "${name}"? Poin member akan dikurangi.`)) { showLoading(button, true); try { const memberDocRef = doc(db, "members", currentMemberId); await updateDoc(memberDocRef, { poin: increment(-pointsCost) }); await addDoc(collection(db, "redemptions"), { memberId: currentMemberId, rewardName: name, pointsSpent: pointsCost, tanggal: new Date() }); const poinDisplay = document.getElementById('info-poin'); const newPoints = parseInt(poinDisplay.textContent) - pointsCost; poinDisplay.textContent = newPoints; displayClaimableRewards(newPoints); showStatus(`Poin berhasil ditukar dengan ${name}!`); await fetchAllStatsData(); } catch (error) { showStatus("Gagal menukar poin.", true); } finally { showLoading(button, false); } } } });
+
+        backToSearchBtn.addEventListener('click', () => { memberDetailOverlay.classList.remove('visible'); document.getElementById('search-form').reset(); document.getElementById('search-hp').focus(); });
+        
+        // --- LOGIKA BARU UNTUK STATISTIK ---
+        
+        // Ambil semua data yang diperlukan untuk statistik
+        const fetchAllStatsData = async () => {
+            try {
+                const [membersSnap, transactionsSnap, redemptionsSnap] = await Promise.all([
+                    getDocs(collection(db, "members")),
+                    getDocs(collection(db, "transactions")),
+                    getDocs(collection(db, "redemptions"))
+                ]);
+                allMembers = membersSnap.docs.map(d => ({ id: d.id, ...d.data(), tanggalDaftar: d.data().tanggalDaftar.toDate() }));
+                allTransactions = transactionsSnap.docs.map(d => ({ id: d.id, ...d.data(), tanggal: d.data().tanggal.toDate() }));
+                allRedemptions = redemptionsSnap.docs.map(d => ({ id: d.id, ...d.data(), tanggal: d.data().tanggal.toDate() }));
+            } catch (error) {
+                console.error("Gagal mengambil data statistik:", error);
+                showStatus("Gagal memuat data statistik.", true);
+            }
+        };
+
+        // Helper untuk rentang tanggal
+        const getDateRange = (period) => {
+            const now = new Date();
+            const start = new Date();
+            const end = new Date();
+            if (period === 'today') {
+                start.setHours(0, 0, 0, 0);
+                end.setHours(23, 59, 59, 999);
+            } else if (period === 'week') {
+                const day = now.getDay();
+                const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Monday as start of week
+                start.setDate(diff);
+                start.setHours(0, 0, 0, 0);
+                end.setDate(start.getDate() + 6);
+                end.setHours(23, 59, 59, 999);
+            } else if (period === 'month') {
+                start.setDate(1);
+                start.setHours(0, 0, 0, 0);
+                end.setMonth(now.getMonth() + 1);
+                end.setDate(0);
+                end.setHours(23, 59, 59, 999);
+            }
+            return { start, end };
+        };
+
+        // Kalkulasi dan update UI statistik
+        const updateStatsUI = (period) => {
+            let filteredMembers = allMembers;
+            let filteredTransactions = allTransactions;
+            let filteredRedemptions = allRedemptions;
+
+            if (period !== 'all') {
+                const { start, end } = getDateRange(period);
+                filteredMembers = allMembers.filter(m => m.tanggalDaftar >= start && m.tanggalDaftar <= end);
+                filteredTransactions = allTransactions.filter(t => t.tanggal >= start && t.tanggal <= end);
+                filteredRedemptions = allRedemptions.filter(r => r.tanggal >= start && r.tanggal <= end);
+            }
+
+            const visitingMemberIds = new Set(filteredTransactions.map(t => t.memberId));
+
+            document.getElementById('stat-total-members').textContent = allMembers.length;
+            document.getElementById('stat-new-members').textContent = filteredMembers.length;
+            document.getElementById('stat-visiting-members').textContent = visitingMemberIds.size;
+            document.getElementById('stat-redeemed-rewards').textContent = filteredRedemptions.length;
+            
+            updateInfoSourceChart();
+        };
+
+        // Inisialisasi dan update chart
+        const updateInfoSourceChart = () => {
+            const sourceCounts = allMembers.reduce((acc, member) => {
+                const source = member.sumberInfo || 'Tidak Diketahui';
+                acc[source] = (acc[source] || 0) + 1;
+                return acc;
+            }, {});
+
+            const labels = Object.keys(sourceCounts);
+            const data = Object.values(sourceCounts);
+            
+            if (infoSourceChart) {
+                infoSourceChart.data.labels = labels;
+                infoSourceChart.data.datasets[0].data = data;
+                infoSourceChart.update();
+            }
+        };
+        
+        const initializeChart = () => {
+            const ctx = document.getElementById('info-source-chart').getContext('2d');
+            if (infoSourceChart) infoSourceChart.destroy();
+            infoSourceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: [], datasets: [{ label: 'Sumber Info', data: [], backgroundColor: ['#00796B', '#F57C00', '#4CAF50', '#FFC107', '#2196F3'], hoverOffset: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        };
+
+        // Event listener untuk filter statistik
+        document.querySelector('.stats-filter').addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                document.querySelectorAll('.stats-filter button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                updateStatsUI(e.target.dataset.period);
             }
         });
-
-        backToSearchBtn.addEventListener('click', () => {
-            memberDetailOverlay.classList.remove('visible');
-            document.getElementById('search-form').reset();
-            document.getElementById('search-hp').focus();
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchPointRewards();
-            fetchBirthdayRewards();
+        
+        // --- INISIALISASI APLIKASI ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchPointRewards();
+            await fetchBirthdayRewards();
+            await fetchAllStatsData();
+            initializeChart();
+            updateStatsUI('today'); // Tampilkan data hari ini secara default
         });
     </script>
 </body>
