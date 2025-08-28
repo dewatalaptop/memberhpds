@@ -23,7 +23,7 @@
         .nav { display: flex; background-color: #FDFDFD; border-bottom: 1px solid var(--border-color); }
         .nav-button { flex: 1; padding: 15px; background-color: transparent; border: none; border-bottom: 4px solid transparent; color: var(--text-dark); cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.3s; opacity: 0.6; }
         .nav-button:hover { opacity: 1; }
-        .nav-button.active { opacity: 1; color: var(--primary-color); border-bottom: 4px solid var(--primary-color); }
+        .nav-button.active { opacity: 1; color: var(--primary-color); border-bottom: 44px solid var(--primary-color); }
         main { padding: 25px; }
         h2, h3, h4 { color: var(--primary-color); text-align: center; }
         h4 { margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px; }
@@ -306,12 +306,11 @@
         let allBirthdayRewards = [];
         let currentMemberId = null;
         let allMembers = [], allTransactions = [], allRedemptions = []; 
-        let fullMemberList = []; // Khusus untuk daftar semua member
+        let fullMemberList = []; 
         let infoSourceChart = null; 
 
         const memberDetailOverlay = document.getElementById('member-detail-overlay');
         const backToSearchBtn = document.getElementById('back-to-search-btn');
-        // --- Variabel Overlay Baru ---
         const passwordPromptOverlay = document.getElementById('password-prompt-overlay');
         const allMembersOverlay = document.getElementById('all-members-overlay');
         const editMemberOverlay = document.getElementById('edit-member-overlay');
@@ -344,7 +343,6 @@
             const today = new Date();
             const birthdate = new Date(memberTanggalLahir);
             if (today.getMonth() === birthdate.getMonth() && today.getDate() === birthdate.getDate()) {
-                // Return the first birthday reward found
                 return allBirthdayRewards.length > 0 ? allBirthdayRewards[0].name : null;
             }
             return null;
@@ -352,7 +350,7 @@
         
         const updateInfoSourceList = (sourceCounts) => {
             const listEl = document.getElementById('info-source-list');
-            listEl.innerHTML = ''; // Clear previous data
+            listEl.innerHTML = ''; 
             for (const source in sourceCounts) {
                 const li = document.createElement('li');
                 li.className = 'data-list-item';
@@ -362,13 +360,19 @@
         };
 
         // --- NAVIGASI ---
-        document.querySelectorAll('.nav-button').forEach(button => { button.addEventListener('click', () => { 
-            document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active')); 
-            button.classList.add('active'); 
-            const targetId = button.id.replace('nav-', '') + '-section'; 
-            document.querySelectorAll('.section').forEach(section => section.classList.toggle('active', section.id === targetId));
-            if(targetId === 'stats-section') { updateStatsUI('today'); }
-        }); });
+        const setupNavigation = () => {
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    const targetId = button.id.replace('nav-', '') + '-section';
+                    document.querySelectorAll('.section').forEach(section => section.classList.toggle('active', section.id === targetId));
+                    if (targetId === 'stats-section') {
+                        updateStatsUI('today');
+                    }
+                });
+            });
+        };
 
         // --- LOGIKA BAGIAN REWARD ---
         const renderList = (listId, items, nameField, pointsField = null) => {
@@ -379,13 +383,6 @@
         };
         const fetchPointRewards = async () => { try { const snapshot = await getDocs(collection(db, "rewards")); allPointRewards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderList('point-reward-list', allPointRewards, 'name', 'points'); } catch (error) { console.error("Gagal memuat reward poin:", error); } };
         const fetchBirthdayRewards = async () => { try { const snapshot = await getDocs(collection(db, "birthdayRewards")); allBirthdayRewards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderList('birthday-reward-list', allBirthdayRewards, 'name'); } catch (error) { console.error("Gagal memuat reward ultah:", error); } };
-        document.getElementById('add-point-reward-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const name = e.target.querySelector('#reward-name').value; const points = parseInt(e.target.querySelector('#reward-points').value); if (!name || !points) throw new Error("Nama dan Poin Reward harus diisi."); await addDoc(collection(db, "rewards"), { name, points }); showStatus("Reward poin berhasil ditambahkan!"); e.target.reset(); await fetchPointRewards(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
-        document.getElementById('add-birthday-reward-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const name = e.target.querySelector('#birthday-reward-name').value; if (!name) throw new Error("Nama Reward harus diisi."); await addDoc(collection(db, "birthdayRewards"), { name }); showStatus("Reward ultah berhasil ditambahkan!"); e.target.reset(); await fetchBirthdayRewards(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
-        document.getElementById('rewards-section').addEventListener('click', async e => { const button = e.target.closest('.delete-reward-btn'); if (button) { if (confirm("Yakin ingin menghapus reward ini?")) { showLoading(button, true); try { const { id, type } = button.dataset; const collectionName = type === 'points' ? 'rewards' : 'birthdayRewards'; await deleteDoc(doc(db, collectionName, id)); showStatus("Reward berhasil dihapus."); type === 'points' ? await fetchPointRewards() : await fetchBirthdayRewards(); } catch (error) { showStatus("Gagal menghapus reward.", true); } } } });
-        const showRewardOptions = () => { document.getElementById('reward-options').classList.remove('hidden'); document.getElementById('point-rewards-container').classList.add('hidden'); document.getElementById('birthday-rewards-container').classList.add('hidden'); };
-        document.getElementById('btn-show-point-rewards').addEventListener('click', () => { document.getElementById('reward-options').classList.add('hidden'); document.getElementById('point-rewards-container').classList.remove('hidden'); });
-        document.getElementById('btn-show-birthday-rewards').addEventListener('click', () => { document.getElementById('reward-options').classList.add('hidden'); document.getElementById('birthday-rewards-container').classList.remove('hidden'); });
-        document.querySelectorAll('.back-to-reward-options').forEach(button => { button.addEventListener('click', showRewardOptions); });
         
         // --- LOGIKA MEMBER & TRANSAKSI ---
         const displayClaimableRewards = (memberPoints) => {
@@ -395,24 +392,6 @@
                 ? `<h4>Reward yang Bisa Diklaim:</h4>` + affordableRewards.map(r => `<div class="reward-item"><span><strong>${r.name}</strong> (${r.points} Poin)</span><button class="btn btn-secondary redeem-btn" data-name="${r.name}" data-points="${r.points}"><span class="btn-text">Redeem</span><span class="material-symbols-outlined">redeem</span><span class="spinner"></span></button></div>`).join('')
                 : '<h4>Reward yang Bisa Diklaim:</h4><p>Poin belum cukup untuk menukar reward.</p>';
         };
-        document.getElementById('search-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const nomorHp = document.getElementById('search-hp').value.trim(); if (!nomorHp) throw new Error("Nomor HP harus diisi."); const docRef = doc(db, "members", nomorHp); const docSnap = await getDoc(docRef); if (docSnap.exists()) { const member = docSnap.data(); currentMemberId = member.nomorHp; document.getElementById('info-nama').textContent = member.nama; document.getElementById('info-poin').textContent = member.poin || 0;
-                displayClaimableRewards(member.poin || 0);
-
-                const birthdayRewardName = getBirthdayReward(member.tanggalLahir);
-                if (birthdayRewardName) {
-                    birthdayNotification.textContent = `🎉 Selamat ulang tahun! Member ini berhak mendapatkan reward spesial: ${birthdayRewardName}.`;
-                    birthdayNotification.classList.add('show');
-                    document.getElementById('whatsapp-member-btn').href = `https://wa.me/${formatPhoneNumber(member.nomorHp)}?text=${encodeURIComponent(`Halo ${member.nama}, selamat ulang tahun! Dolan Sawah punya penawaran spesial untukmu: *${birthdayRewardName}*. Langsung datang ke resto dan tukar reward spesialmu! 🎉🥳`)}`;
-                } else {
-                    birthdayNotification.classList.remove('show');
-                    document.getElementById('whatsapp-member-btn').href = `https://wa.me/${formatPhoneNumber(member.nomorHp)}`;
-                }
-                
-                memberDetailOverlay.classList.add('visible'); document.getElementById('transaction-amount').focus(); } else { showStatus(`Member dengan No. HP ${nomorHp} tidak ditemukan.`, true); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
-        document.getElementById('register-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const form = e.target; const nomorHp = form.querySelector('#nomor-hp').value.trim(); const docRef = doc(db, "members", nomorHp); const docSnap = await getDoc(docRef); if(docSnap.exists()){ throw new Error("Nomor HP ini sudah terdaftar sebagai member."); } await setDoc(docRef, { nama: form.querySelector('#nama').value, alamat: form.querySelector('#alamat').value, nomorHp: nomorHp, tanggalLahir: form.querySelector('#tanggal-lahir').value, sumberInfo: form.querySelector('#sumber-info').value, poin: 0, tanggalDaftar: new Date() }); showStatus("Member baru berhasil didaftarkan!"); form.reset(); document.getElementById('nav-search').click(); await fetchAllStatsData(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
-        document.getElementById('add-transaction-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const amount = parseInt(e.target.querySelector('#transaction-amount').value); if (!amount || !currentMemberId) throw new Error("Masukkan nominal valid."); await addDoc(collection(db, "transactions"), { memberId: currentMemberId, nominal: amount, tanggal: new Date() }); showStatus("Transaksi berhasil disimpan! Poin akan diupdate oleh sistem."); e.target.reset(); memberDetailOverlay.classList.remove('visible'); await fetchAllStatsData(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
-        document.getElementById('member-detail-overlay').addEventListener('click', async e => { const button = e.target.closest('.redeem-btn'); if (button) { const { name, points } = button.dataset; const pointsCost = parseInt(points); if (confirm(`Tukar ${pointsCost} poin dengan "${name}"? Poin member akan dikurangi.`)) { showLoading(button, true); try { const memberDocRef = doc(db, "members", currentMemberId); await updateDoc(memberDocRef, { poin: increment(-pointsCost) }); await addDoc(collection(db, "redemptions"), { memberId: currentMemberId, rewardName: name, pointsSpent: pointsCost, tanggal: new Date() }); const poinDisplay = document.getElementById('info-poin'); const newPoints = parseInt(poinDisplay.textContent) - pointsCost; poinDisplay.textContent = newPoints; displayClaimableRewards(newPoints); showStatus(`Poin berhasil ditukar dengan ${name}!`); await fetchAllStatsData(); } catch (error) { showStatus("Gagal menukar poin.", true); } finally { showLoading(button, false); } } } });
-        backToSearchBtn.addEventListener('click', () => { memberDetailOverlay.classList.remove('visible'); document.getElementById('search-form').reset(); document.getElementById('search-hp').focus(); birthdayNotification.classList.remove('show'); });
         
         // --- LOGIKA STATISTIK ---
         const fetchAllStatsData = async () => { try { const [membersSnap, transactionsSnap, redemptionsSnap] = await Promise.all([ getDocs(collection(db, "members")), getDocs(collection(db, "transactions")), getDocs(collection(db, "redemptions")) ]); allMembers = membersSnap.docs.map(d => ({ id: d.id, ...d.data(), tanggalDaftar: d.data().tanggalDaftar.toDate() })); allTransactions = transactionsSnap.docs.map(d => ({ id: d.id, ...d.data(), tanggal: d.data().tanggal.toDate() })); allRedemptions = redemptionsSnap.docs.map(d => ({ id: d.id, ...d.data(), tanggal: d.data().tanggal.toDate() })); } catch (error) { console.error("Gagal mengambil data statistik:", error); showStatus("Gagal memuat data statistik.", true); } };
@@ -420,25 +399,8 @@
         const updateStatsUI = (period) => { let filteredMembers = allMembers; let filteredTransactions = allTransactions; let filteredRedemptions = allRedemptions; if (period !== 'all') { const { start, end } = getDateRange(period); filteredMembers = allMembers.filter(m => m.tanggalDaftar >= start && m.tanggalDaftar <= end); filteredTransactions = allTransactions.filter(t => t.tanggal >= start && t.tanggal <= end); filteredRedemptions = allRedemptions.filter(r => r.tanggal >= start && r.tanggal <= end); } const visitingMemberIds = new Set(filteredTransactions.map(t => t.memberId)); document.getElementById('stat-total-members').textContent = allMembers.length; document.getElementById('stat-new-members').textContent = filteredMembers.length; document.getElementById('stat-visiting-members').textContent = visitingMemberIds.size; document.getElementById('stat-redeemed-rewards').textContent = filteredRedemptions.length; updateInfoSourceChart(); };
         const updateInfoSourceChart = () => { const sourceCounts = allMembers.reduce((acc, member) => { const source = member.sumberInfo || 'Tidak Diketahui'; acc[source] = (acc[source] || 0) + 1; return acc; }, {}); const labels = Object.keys(sourceCounts); const data = Object.values(sourceCounts); if (infoSourceChart) { infoSourceChart.data.labels = labels; infoSourceChart.data.datasets[0].data = data; infoSourceChart.update(); } updateInfoSourceList(sourceCounts); };
         const initializeChart = () => { const ctx = document.getElementById('info-source-chart').getContext('2d'); if (infoSourceChart) infoSourceChart.destroy(); infoSourceChart = new Chart(ctx, { type: 'doughnut', data: { labels: [], datasets: [{ label: 'Sumber Info', data: [], backgroundColor: ['#00796B', '#F57C00', '#4CAF50', '#FFC107', '#2196F3'], hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false } }); };
-        document.querySelector('.stats-filter').addEventListener('click', (e) => { if (e.target.tagName === 'BUTTON') { document.querySelectorAll('.stats-filter button').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); updateStatsUI(e.target.dataset.period); } });
-
+        
         // --- LOGIKA BARU: MANAJEMEN SEMUA MEMBER ---
-        document.getElementById('show-all-members-btn').addEventListener('click', () => { passwordPromptOverlay.classList.add('visible'); document.getElementById('admin-password').focus(); });
-        document.getElementById('cancel-password-btn').addEventListener('click', () => passwordPromptOverlay.classList.remove('visible'));
-        
-        document.getElementById('password-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const password = document.getElementById('admin-password').value;
-            if (password === '654321') {
-                passwordPromptOverlay.classList.remove('visible');
-                e.target.reset();
-                await loadAndRenderAllMembers();
-                allMembersOverlay.classList.add('visible');
-            } else {
-                showStatus("Password salah!", true);
-            }
-        });
-        
         const loadAndRenderAllMembers = async () => {
             const listEl = document.getElementById('all-members-list');
             listEl.innerHTML = '<li>Memuat data...</li>';
@@ -482,78 +444,129 @@
             }).join('');
         };
 
-        document.getElementById('search-all-members-input').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filtered = fullMemberList.filter(member => member.nomorHp.includes(searchTerm));
-            renderMemberList(filtered);
-        });
-        
-        document.getElementById('close-all-members-btn').addEventListener('click', () => allMembersOverlay.classList.remove('visible'));
-
-        // Event delegation untuk tombol Edit dan Hapus
-        document.getElementById('all-members-list').addEventListener('click', async (e) => {
-            const memberId = e.target.dataset.id;
-            if (e.target.classList.contains('delete-member-btn')) {
-                if (confirm(`Yakin ingin menghapus member dengan HP ${memberId}? Data tidak bisa dikembalikan.`)) {
-                    try {
-                        await deleteDoc(doc(db, "members", memberId));
-                        showStatus("Member berhasil dihapus.", false);
-                        document.getElementById(`member-item-${memberId}`).remove();
-                        // Update data lokal
-                        fullMemberList = fullMemberList.filter(m => m.id !== memberId);
-                        await fetchAllStatsData(); // Refresh data statistik
-                    } catch (error) {
-                        showStatus("Gagal menghapus member.", true);
-                        console.error("Delete error:", error);
-                    }
-                }
-            } else if (e.target.classList.contains('edit-member-btn')) {
-                const memberData = fullMemberList.find(m => m.id === memberId);
-                if (memberData) {
-                    const form = document.getElementById('edit-member-form');
-                    form.querySelector('#edit-member-id').value = memberData.id;
-                    form.querySelector('#edit-nama').value = memberData.nama;
-                    form.querySelector('#edit-alamat').value = memberData.alamat;
-                    form.querySelector('#edit-nomor-hp').value = memberData.nomorHp;
-                    form.querySelector('#edit-tanggal-lahir').value = memberData.tanggalLahir;
-                    form.querySelector('#edit-sumber-info').value = memberData.sumberInfo;
-                    form.querySelector('#edit-poin').value = memberData.poin || 0;
-                    editMemberOverlay.classList.add('visible');
-                }
-            }
-        });
-
-        document.getElementById('cancel-edit-btn').addEventListener('click', () => editMemberOverlay.classList.remove('visible'));
-        
-        document.getElementById('edit-member-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const button = e.target.querySelector('button[type="submit"]');
-            showLoading(button, true);
-            const memberId = document.getElementById('edit-member-id').value;
-            const updatedData = {
-                nama: document.getElementById('edit-nama').value,
-                alamat: document.getElementById('edit-alamat').value,
-                tanggalLahir: document.getElementById('edit-tanggal-lahir').value,
-                sumberInfo: document.getElementById('edit-sumber-info').value,
-                poin: parseInt(document.getElementById('edit-poin').value)
-            };
-            try {
-                const memberDocRef = doc(db, "members", memberId);
-                await updateDoc(memberDocRef, updatedData);
-                showStatus("Data member berhasil diupdate.", false);
-                editMemberOverlay.classList.remove('visible');
-                await loadAndRenderAllMembers(); // Refresh list
-                await fetchAllStatsData(); // Refresh data statistik
-            } catch(error) {
-                showStatus("Gagal mengupdate data.", true);
-                console.error("Update error: ", error);
-            } finally {
-                showLoading(button, false);
-            }
-        });
-
         // --- INISIALISASI APLIKASI ---
         document.addEventListener('DOMContentLoaded', async () => {
+            setupNavigation();
+            
+            // Event Listeners for forms and buttons
+            document.getElementById('search-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const nomorHp = document.getElementById('search-hp').value.trim(); if (!nomorHp) throw new Error("Nomor HP harus diisi."); const docRef = doc(db, "members", nomorHp); const docSnap = await getDoc(docRef); if (docSnap.exists()) { const member = docSnap.data(); currentMemberId = member.nomorHp; document.getElementById('info-nama').textContent = member.nama; document.getElementById('info-poin').textContent = member.poin || 0;
+                displayClaimableRewards(member.poin || 0);
+                const birthdayRewardName = getBirthdayReward(member.tanggalLahir);
+                if (birthdayRewardName) {
+                    birthdayNotification.textContent = `🎉 Selamat ulang tahun! Member ini berhak mendapatkan reward spesial: ${birthdayRewardName}.`;
+                    birthdayNotification.classList.add('show');
+                    document.getElementById('whatsapp-member-btn').href = `https://wa.me/${formatPhoneNumber(member.nomorHp)}?text=${encodeURIComponent(`Halo ${member.nama}, selamat ulang tahun! Dolan Sawah punya penawaran spesial untukmu: *${birthdayRewardName}*. Langsung datang ke resto dan tukar reward spesialmu! 🎉🥳`)}`;
+                } else {
+                    birthdayNotification.classList.remove('show');
+                    document.getElementById('whatsapp-member-btn').href = `https://wa.me/${formatPhoneNumber(member.nomorHp)}`;
+                }
+                memberDetailOverlay.classList.add('visible'); document.getElementById('transaction-amount').focus(); } else { showStatus(`Member dengan No. HP ${nomorHp} tidak ditemukan.`, true); } } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
+
+            document.getElementById('register-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const form = e.target; const nomorHp = form.querySelector('#nomor-hp').value.trim(); const docRef = doc(db, "members", nomorHp); const docSnap = await getDoc(docRef); if(docSnap.exists()){ throw new Error("Nomor HP ini sudah terdaftar sebagai member."); } await setDoc(docRef, { nama: form.querySelector('#nama').value, alamat: form.querySelector('#alamat').value, nomorHp: nomorHp, tanggalLahir: form.querySelector('#tanggal-lahir').value, sumberInfo: form.querySelector('#sumber-info').value, poin: 0, tanggalDaftar: new Date() }); showStatus("Member baru berhasil didaftarkan!"); form.reset(); document.getElementById('nav-search').click(); await fetchAllStatsData(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
+
+            document.getElementById('add-transaction-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const amount = parseInt(e.target.querySelector('#transaction-amount').value); if (!amount || !currentMemberId) throw new Error("Masukkan nominal valid."); await addDoc(collection(db, "transactions"), { memberId: currentMemberId, nominal: amount, tanggal: new Date() }); showStatus("Transaksi berhasil disimpan! Poin akan diupdate oleh sistem."); e.target.reset(); memberDetailOverlay.classList.remove('visible'); await fetchAllStatsData(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
+
+            document.getElementById('member-detail-overlay').addEventListener('click', async e => { const button = e.target.closest('.redeem-btn'); if (button) { const { name, points } = button.dataset; const pointsCost = parseInt(points); if (confirm(`Tukar ${pointsCost} poin dengan "${name}"? Poin member akan dikurangi.`)) { showLoading(button, true); try { const memberDocRef = doc(db, "members", currentMemberId); await updateDoc(memberDocRef, { poin: increment(-pointsCost) }); await addDoc(collection(db, "redemptions"), { memberId: currentMemberId, rewardName: name, pointsSpent: pointsCost, tanggal: new Date() }); const poinDisplay = document.getElementById('info-poin'); const newPoints = parseInt(poinDisplay.textContent) - pointsCost; poinDisplay.textContent = newPoints; displayClaimableRewards(newPoints); showStatus(`Poin berhasil ditukar dengan ${name}!`); await fetchAllStatsData(); } catch (error) { showStatus("Gagal menukar poin.", true); } finally { showLoading(button, false); } } } });
+
+            backToSearchBtn.addEventListener('click', () => { memberDetailOverlay.classList.remove('visible'); document.getElementById('search-form').reset(); document.getElementById('search-hp').focus(); birthdayNotification.classList.remove('show'); });
+
+            document.getElementById('add-point-reward-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const name = e.target.querySelector('#reward-name').value; const points = parseInt(e.target.querySelector('#reward-points').value); if (!name || !points) throw new Error("Nama dan Poin Reward harus diisi."); await addDoc(collection(db, "rewards"), { name, points }); showStatus("Reward poin berhasil ditambahkan!"); e.target.reset(); await fetchPointRewards(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
+
+            document.getElementById('add-birthday-reward-form').addEventListener('submit', async e => { e.preventDefault(); const button = e.target.querySelector('button'); showLoading(button, true); try { const name = e.target.querySelector('#birthday-reward-name').value; if (!name) throw new Error("Nama Reward harus diisi."); await addDoc(collection(db, "birthdayRewards"), { name }); showStatus("Reward ultah berhasil ditambahkan!"); e.target.reset(); await fetchBirthdayRewards(); } catch (error) { showStatus(error.message, true); } finally { showLoading(button, false); } });
+
+            document.getElementById('rewards-section').addEventListener('click', async e => { const button = e.target.closest('.delete-reward-btn'); if (button) { if (confirm("Yakin ingin menghapus reward ini?")) { showLoading(button, true); try { const { id, type } = button.dataset; const collectionName = type === 'points' ? 'rewards' : 'birthdayRewards'; await deleteDoc(doc(db, collectionName, id)); showStatus("Reward berhasil dihapus."); type === 'points' ? await fetchPointRewards() : await fetchBirthdayRewards(); } catch (error) { showStatus("Gagal menghapus reward.", true); } } } });
+
+            document.getElementById('btn-show-point-rewards').addEventListener('click', () => { document.getElementById('reward-options').classList.add('hidden'); document.getElementById('point-rewards-container').classList.remove('hidden'); });
+            document.getElementById('btn-show-birthday-rewards').addEventListener('click', () => { document.getElementById('reward-options').classList.add('hidden'); document.getElementById('birthday-rewards-container').classList.remove('hidden'); });
+            document.querySelectorAll('.back-to-reward-options').forEach(button => { button.addEventListener('click', () => { document.getElementById('reward-options').classList.remove('hidden'); document.getElementById('point-rewards-container').classList.add('hidden'); document.getElementById('birthday-rewards-container').classList.add('hidden'); }); });
+
+            document.querySelector('.stats-filter').addEventListener('click', (e) => { if (e.target.tagName === 'BUTTON') { document.querySelectorAll('.stats-filter button').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); updateStatsUI(e.target.dataset.period); } });
+
+            document.getElementById('show-all-members-btn').addEventListener('click', () => { passwordPromptOverlay.classList.add('visible'); document.getElementById('admin-password').focus(); });
+            document.getElementById('cancel-password-btn').addEventListener('click', () => passwordPromptOverlay.classList.remove('visible'));
+
+            document.getElementById('password-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const password = document.getElementById('admin-password').value;
+                if (password === '654321') {
+                    passwordPromptOverlay.classList.remove('visible');
+                    e.target.reset();
+                    await loadAndRenderAllMembers();
+                    allMembersOverlay.classList.add('visible');
+                } else {
+                    showStatus("Password salah!", true);
+                }
+            });
+
+            document.getElementById('search-all-members-input').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filtered = fullMemberList.filter(member => member.nomorHp.includes(searchTerm));
+                renderMemberList(filtered);
+            });
+            
+            document.getElementById('close-all-members-btn').addEventListener('click', () => allMembersOverlay.classList.remove('visible'));
+
+            document.getElementById('all-members-list').addEventListener('click', async (e) => {
+                const memberId = e.target.dataset.id;
+                if (e.target.classList.contains('delete-member-btn')) {
+                    if (confirm(`Yakin ingin menghapus member dengan HP ${memberId}? Data tidak bisa dikembalikan.`)) {
+                        try {
+                            await deleteDoc(doc(db, "members", memberId));
+                            showStatus("Member berhasil dihapus.", false);
+                            document.getElementById(`member-item-${memberId}`).remove();
+                            fullMemberList = fullMemberList.filter(m => m.id !== memberId);
+                            await fetchAllStatsData(); 
+                        } catch (error) {
+                            showStatus("Gagal menghapus member.", true);
+                            console.error("Delete error:", error);
+                        }
+                    }
+                } else if (e.target.classList.contains('edit-member-btn')) {
+                    const memberData = fullMemberList.find(m => m.id === memberId);
+                    if (memberData) {
+                        const form = document.getElementById('edit-member-form');
+                        form.querySelector('#edit-member-id').value = memberData.id;
+                        form.querySelector('#edit-nama').value = memberData.nama;
+                        form.querySelector('#edit-alamat').value = memberData.alamat;
+                        form.querySelector('#edit-nomor-hp').value = memberData.nomorHp;
+                        form.querySelector('#edit-tanggal-lahir').value = memberData.tanggalLahir;
+                        form.querySelector('#edit-sumber-info').value = memberData.sumberInfo;
+                        form.querySelector('#edit-poin').value = memberData.poin || 0;
+                        editMemberOverlay.classList.add('visible');
+                    }
+                }
+            });
+
+            document.getElementById('cancel-edit-btn').addEventListener('click', () => editMemberOverlay.classList.remove('visible'));
+            
+            document.getElementById('edit-member-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const button = e.target.querySelector('button[type="submit"]');
+                showLoading(button, true);
+                const memberId = document.getElementById('edit-member-id').value;
+                const updatedData = {
+                    nama: document.getElementById('edit-nama').value,
+                    alamat: document.getElementById('edit-alamat').value,
+                    tanggalLahir: document.getElementById('edit-tanggal-lahir').value,
+                    sumberInfo: document.getElementById('edit-sumber-info').value,
+                    poin: parseInt(document.getElementById('edit-poin').value)
+                };
+                try {
+                    const memberDocRef = doc(db, "members", memberId);
+                    await updateDoc(memberDocRef, updatedData);
+                    showStatus("Data member berhasil diupdate.", false);
+                    editMemberOverlay.classList.remove('visible');
+                    await loadAndRenderAllMembers(); 
+                    await fetchAllStatsData(); 
+                } catch(error) {
+                    showStatus("Gagal mengupdate data.", true);
+                    console.error("Update error: ", error);
+                } finally {
+                    showLoading(button, false);
+                }
+            });
+
+            // Initial data fetch and chart setup
             await fetchPointRewards();
             await fetchBirthdayRewards();
             await fetchAllStatsData();
