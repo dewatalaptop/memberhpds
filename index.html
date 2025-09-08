@@ -14,6 +14,7 @@
             --bg-light:#F4F6F8; --bg-white:#FFFFFF; --text-dark:#333; --text-light:#FFF;
             --border-color:#E0E0E0; --shadow:0 4px 6px rgba(0,0,0,.1); --font-body:'Poppins',sans-serif;
             --danger-color:#d9534f; --danger-hover:#c9302c; --info-color:#5bc0de; --info-hover:#31b0d5;
+            --warning-color:#f0ad4e; --warning-hover:#ec971f;
         }
 
         *{box-sizing:border-box}
@@ -39,6 +40,8 @@
         .form-group label{display:block; margin-bottom:8px; font-weight:500}
         .form-group input,.form-group select{width:100%; padding:12px; border:1px solid var(--border-color); border-radius:8px; font-size:1em}
         .form-group input:focus{border-color:var(--primary-color); outline:none}
+        .form-group small {font-size: 0.8em; color: #777; margin-top: 4px; display: block;}
+
 
         .btn{width:100%; padding:15px; border:none; border-radius:8px; cursor:pointer; font-size:1.05em; font-weight:600; transition:all .3s; display:flex; justify-content:center; align-items:center; gap:8px}
         .btn .material-symbols-outlined{font-size:1.2em}
@@ -50,6 +53,8 @@
         .btn-danger:hover{background:var(--danger-hover)}
         .btn-info{background:var(--info-color); color:var(--text-light)}
         .btn-info:hover{background:var(--info-hover)}
+        .btn-warning{background:var(--warning-color); color:var(--text-light)}
+        .btn-warning:hover{background:var(--warning-hover)}
         .btn:disabled{opacity:.7; cursor:not-allowed}
 
         .spinner{width:20px; height:20px; border:3px solid rgba(255,255,255,.3); border-top-color:var(--text-light); border-radius:50%; display:none; animation:spin 1s linear infinite}
@@ -93,7 +98,7 @@
         .btn-options{display:flex; flex-direction:column; gap:12px; margin-top:16px}
         .reward-subsection{margin-top:16px}
 
-        /* STATISTIK */
+        /* STATISTIK & FILTER */
         .stats-filter{display:flex; justify-content:center; gap:10px; margin:8px 0 18px}
         .stats-filter button{background:var(--bg-white); color:var(--primary-color); border:2px solid var(--border-color); padding:8px 14px; border-radius:18px; font-weight:600; cursor:pointer; transition:all .25s}
         .stats-filter button.active,.stats-filter button:hover{background:var(--primary-color); color:var(--text-light); border-color:var(--primary-color)}
@@ -112,16 +117,24 @@
         .data-list-item{padding:10px 6px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; font-size:.98em}
         .data-list-item:last-child{border-bottom:none}
 
-        /* DAFTAR SEMUA MEMBER */
+        /* DAFTAR MEMBER & REKAP */
         #register-section .divider{border-top:1px dashed var(--border-color); margin:24px 0}
-        #all-members-list{list-style:none; padding:0; margin-top:10px}
+        #all-members-list, #rekap-member-list {list-style:none; padding:0; margin-top:10px}
         .member-list-item{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; padding:12px; border-radius:8px; margin-bottom:8px; background:#F9F9F9; border:1px solid var(--border-color)}
         .member-list-item-info{flex-grow:1}
         .member-list-item-info strong{display:block; font-size:1.05em; color:var(--text-dark)}
         .member-list-item-info span{color:#666}
-        .member-list-item-actions{display:flex; gap:8px; width:100%; justify-content:flex-end}
+        .member-list-item-actions{display:flex; gap:8px; width:100%; justify-content:flex-end; flex-wrap: wrap;}
         @media (min-width:500px){ .member-list-item-actions{width:auto} }
         .member-list-item-actions .btn{width:auto; padding:8px 14px; font-size:.9em}
+        
+        /* -- BARU: STYLE UNTUK REKAP -- */
+        .verification-status { font-size: 0.8em; font-weight: bold; padding: 4px 8px; border-radius: 10px; color: var(--text-light); }
+        .verification-status.unverified { background-color: var(--danger-color); }
+        .verification-status.verified { background-color: var(--primary-color); }
+
+        .rekap-member-item .member-list-item-info { width: 100%; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .rekap-member-item .member-list-item-actions .btn .material-symbols-outlined { font-size: 1.1em; }
     </style>
 </head>
 <body>
@@ -165,6 +178,16 @@
                         <option>Instagram</option><option>Tiktok</option><option>Teman/Keluarga</option><option>Lainnya</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="instagram">Username Instagram (Opsional)</label>
+                    <input type="text" id="instagram" placeholder="Contoh: dolansawah.resto">
+                    <small>Cukup masukkan username, tanpa "@"</small>
+                </div>
+                <div class="form-group">
+                    <label for="tiktok">Username TikTok (Opsional)</label>
+                    <input type="text" id="tiktok" placeholder="Contoh: dolansawah.official">
+                     <small>Cukup masukkan username, tanpa "@"</small>
+                </div>
                 <button type="submit" class="btn btn-primary">
                     <span class="btn-text">Daftarkan Member</span>
                     <span class="material-symbols-outlined">person_add</span>
@@ -174,10 +197,16 @@
 
             <div class="divider"></div>
             <h4>Manajemen Member</h4>
-            <button id="show-all-members-btn" class="btn btn-secondary">
-                <span class="btn-text">Lihat Semua Data Member</span>
-                <span class="material-symbols-outlined">group</span>
-            </button>
+            <div class="btn-options">
+                 <button id="show-all-members-btn" class="btn btn-secondary">
+                    <span class="btn-text">Lihat Semua Data Member</span>
+                    <span class="material-symbols-outlined">group</span>
+                </button>
+                 <button id="rekap-member-baru-btn" class="btn btn-secondary">
+                    <span class="btn-text">Rekap Member Baru</span>
+                    <span class="material-symbols-outlined">history</span>
+                </button>
+                </div>
         </section>
 
         <section id="rewards-section" class="section">
@@ -318,6 +347,20 @@
     </div>
 </div>
 
+<div id="rekap-member-overlay" class="overlay">
+    <div class="overlay-content">
+        <button id="close-rekap-btn" class="btn btn-secondary" style="width:auto; margin-bottom:20px;">
+             <span class="material-symbols-outlined">close</span>
+        </button>
+        <h3>Rekap Member Baru Terdaftar</h3>
+        <div id="rekap-filter" class="stats-filter">
+            <button class="active" data-period="today">Hari Ini</button>
+            <button data-period="week">Minggu Ini</button>
+            <button data-period="month">Bulan Ini</button>
+        </div>
+        <ul id="rekap-member-list"></ul>
+    </div>
+</div>
 <div id="edit-member-overlay" class="overlay">
     <div class="overlay-content">
         <h3>Edit Data Member</h3>
@@ -333,6 +376,14 @@
                     <option value="">-- Pilih --</option>
                     <option>Instagram</option><option>Tiktok</option><option>Teman/Keluarga</option><option>Lainnya</option>
                 </select>
+            </div>
+             <div class="form-group">
+                <label for="edit-instagram">Username Instagram</label>
+                <input type="text" id="edit-instagram" placeholder="Username Instagram">
+            </div>
+            <div class="form-group">
+                <label for="edit-tiktok">Username TikTok</label>
+                <input type="text" id="edit-tiktok" placeholder="Username TikTok">
             </div>
             <div class="form-group"><label for="edit-poin">Poin</label><input type="number" id="edit-poin" required></div>
              <div class="form-group"><label for="edit-sisa-pembelanjaan">Sisa Pembelanjaan (Rp)</label><input type="number" id="edit-sisa-pembelanjaan" required></div>
@@ -371,7 +422,7 @@
     let allMembers = [], allTransactions = [], allRedemptions = [];
     let fullMemberList = [];
     let infoSourceChart = null;
-    const POIN_THRESHOLD = 100000; // --- PERBAIKAN: Definisikan ambang batas poin sebagai konstanta
+    const POIN_THRESHOLD = 100000;
 
     const memberDetailOverlay   = document.getElementById('member-detail-overlay');
     const backToSearchBtn       = document.getElementById('back-to-search-btn');
@@ -379,6 +430,9 @@
     const allMembersOverlay     = document.getElementById('all-members-overlay');
     const editMemberOverlay     = document.getElementById('edit-member-overlay');
     const birthdayNotification  = document.getElementById('birthday-notification');
+    // === PERUBAHAN 5: Deklarasi Variabel Overlay Rekap ===
+    const rekapMemberOverlay = document.getElementById('rekap-member-overlay');
+
 
     // --- HELPERS ---
     const showLoading = (button, isLoading) => {
@@ -403,13 +457,12 @@
         document.querySelectorAll('.overlay').forEach(o => o.classList.remove('visible'));
     };
 
-    // --- PERBAIKAN: Membuat format nomor HP lebih tangguh ---
     const formatPhoneNumber = (phoneNumber) => {
-        const s = (phoneNumber || '').replace(/\D/g, ''); // Hapus semua non-digit
+        const s = (phoneNumber || '').replace(/\D/g, '');
         if (s.startsWith('08')) return '62' + s.substring(1);
         if (s.startsWith('62')) return s;
         if (s.startsWith('8')) return '62' + s;
-        return s; // Fallback
+        return s;
     };
     
     const formatCurrency = (number) => {
@@ -585,7 +638,7 @@
         updateInfoSourceList(sourceCounts);
     };
 
-    // --- SEMUA MEMBER ---
+    // --- MANAJEMEN MEMBER (SEMUA & REKAP) ---
     const loadAndRenderAllMembers = async () => {
         const listEl = document.getElementById('all-members-list');
         listEl.innerHTML = '<li>Memuat data...</li>';
@@ -629,6 +682,48 @@
         }).join('');
     };
 
+    // === PERUBAHAN 6: FUNGSI UNTUK MERENDER LIST REKAP MEMBER BARU ===
+    const renderRekapMemberList = (membersToRender) => {
+        const listEl = document.getElementById('rekap-member-list');
+        if (!membersToRender.length) {
+            listEl.innerHTML = '<li>Tidak ada member baru pada periode ini.</li>';
+            return;
+        }
+        listEl.innerHTML = membersToRender.map(member => {
+            const waNumber = formatPhoneNumber(member.nomorHp);
+            const isVerified = member.isVerified !== false; // Anggap verified jika true atau undefined
+            const instagramUser = (member.instagram || '').replace('@','');
+            const tiktokUser = (member.tiktok || '').replace('@','');
+
+            return `
+                <li class="member-list-item rekap-member-item" id="rekap-item-${member.id}">
+                    <div class="member-list-item-info">
+                        <div>
+                            <strong>${member.nama}</strong>
+                            <span>${member.nomorHp}</span>
+                        </div>
+                        <span class="verification-status ${isVerified ? 'verified' : 'unverified'}">
+                            ${isVerified ? 'Terverifikasi' : 'Tidak Terverifikasi'}
+                        </span>
+                    </div>
+                    <div class="member-list-item-actions">
+                        <a href="https://wa.me/${waNumber}" target="_blank" class="btn btn-info">
+                            <span class="material-symbols-outlined">sms</span>
+                        </a>
+                        ${instagramUser ? `<a href="https://instagram.com/${instagramUser}" target="_blank" class="btn btn-info" style="background-color:#E1306C;"><span class="btn-text">IG</span></a>` : ''}
+                        ${tiktokUser ? `<a href="https://tiktok.com/@${tiktokUser}" target="_blank" class="btn btn-info" style="background-color:#010101;"><span class="btn-text">TikTok</span></a>` : ''}
+                        
+                        <button class="btn ${isVerified ? 'btn-warning' : 'btn-primary'} toggle-verify-btn" data-id="${member.id}" data-verified="${isVerified}">
+                           <span class="btn-text">${isVerified ? 'Tandai Unverified' : 'Tandai Verified'}</span>
+                           <span class="material-symbols-outlined">${isVerified ? 'block' : 'check_circle'}</span>
+                        </button>
+                    </div>
+                </li>
+            `;
+        }).join('');
+    };
+
+
     // --- INIT ---
     document.addEventListener('DOMContentLoaded', async () => {
         setupNavigation();
@@ -649,7 +744,6 @@
                     document.getElementById('info-nama').textContent = member.nama;
                     const currPoint = member.poin || 0;
                     document.getElementById('info-poin').textContent = currPoint;
-                    // --- PERBAIKAN: Tampilkan juga sisa pembelanjaan ---
                     document.getElementById('info-sisa').textContent = formatCurrency(member.sisaPembelanjaan);
                     
                     displayClaimableRewards(currPoint);
@@ -688,19 +782,25 @@
                 const docRef  = doc(db,"members", nomorHp);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) throw new Error("Nomor HP ini sudah terdaftar sebagai member.");
+                
+                // === PERUBAHAN 7: Tambah data medsos dan verifikasi ke database ===
                 await setDoc(docRef, {
                     nama: form.querySelector('#nama').value,
                     alamat: form.querySelector('#alamat').value,
                     nomorHp,
                     tanggalLahir: form.querySelector('#tanggal-lahir').value,
                     sumberInfo: form.querySelector('#sumber-info').value,
+                    instagram: form.querySelector('#instagram').value.trim(),
+                    tiktok: form.querySelector('#tiktok').value.trim(),
+                    isVerified: true, // Default status adalah terverifikasi
                     poin: 0,
-                    sisaPembelanjaan: 0, // --- PERBAIKAN: Inisialisasi field sisaPembelanjaan ---
+                    sisaPembelanjaan: 0,
                     tanggalDaftar: new Date()
                 });
+                // === AKHIR PERUBAHAN 7 ===
+
                 showStatus("Member baru berhasil didaftarkan!");
                 form.reset();
-                // --- PERBAIKAN: UX Improvement, pindah dan cari member baru ---
                 document.getElementById('nav-search').click();
                 document.getElementById('search-hp').value = nomorHp;
                 document.querySelector('#search-form button[type="submit"]').click();
@@ -714,7 +814,6 @@
             }
         });
 
-        // --- PERBAIKAN: Logika Transaksi & Perhitungan Poin ---
         document.getElementById('add-transaction-form').addEventListener('submit', async e => {
             e.preventDefault();
             const button = e.target.querySelector('button');
@@ -730,7 +829,6 @@
             const memberDocRef = doc(db, "members", currentMemberId);
 
             try {
-                // Gunakan Firestore Transaction untuk memastikan data konsisten
                 let pointsGained = 0;
                 await runTransaction(db, async (transaction) => {
                     const memberDoc = await transaction.get(memberDocRef);
@@ -751,7 +849,6 @@
                     });
                 });
                 
-                // Catat transaksi di koleksi terpisah
                 await addDoc(collection(db, "transactions"), { 
                     memberId: currentMemberId, 
                     nominal: amount, 
@@ -773,7 +870,6 @@
             }
         });
 
-        // Redeem reward
         document.getElementById('member-detail-overlay').addEventListener('click', async e => {
             const button = e.target.closest('.redeem-btn');
             if (!button) return;
@@ -807,7 +903,6 @@
             birthdayNotification.classList.remove('show');
         });
 
-        // Tambah reward
         document.getElementById('add-point-reward-form').addEventListener('submit', async e => {
             e.preventDefault();
             const button = e.target.querySelector('button');
@@ -845,7 +940,6 @@
             }
         });
 
-        // Hapus reward
         document.getElementById('rewards-section').addEventListener('click', async e => {
             const button = e.target.closest('.delete-reward-btn');
             if (!button) return;
@@ -864,7 +958,6 @@
             }
         });
 
-        // Toggle subsection reward
         document.getElementById('btn-show-point-rewards').addEventListener('click', () => {
             document.getElementById('reward-options').classList.add('hidden');
             document.getElementById('point-rewards-container').classList.remove('hidden');
@@ -881,7 +974,6 @@
             });
         });
 
-        // Filter statistik
         document.querySelector('.stats-filter').addEventListener('click', (e) => {
             if (e.target.tagName !== 'BUTTON') return;
             document.querySelectorAll('.stats-filter button').forEach(b => b.classList.remove('active'));
@@ -904,7 +996,7 @@
                 await loadAndRenderAllMembers();
                 allMembersOverlay.classList.add('visible');
             }else{
-                showStatus("Password salah!", true, 'status-message'); // Menampilkan pesan error di main window
+                showStatus("Password salah!", true, 'status-message');
                 e.target.reset();
             }
         });
@@ -945,6 +1037,9 @@
                     form.querySelector('#edit-nomor-hp').value = memberData.nomorHp || '';
                     form.querySelector('#edit-tanggal-lahir').value = memberData.tanggalLahir || '';
                     form.querySelector('#edit-sumber-info').value = memberData.sumberInfo || '';
+                    // === PERUBAHAN 8: Isi data medsos di form edit ===
+                    form.querySelector('#edit-instagram').value = memberData.instagram || '';
+                    form.querySelector('#edit-tiktok').value = memberData.tiktok || '';
                     form.querySelector('#edit-poin').value = memberData.poin || 0;
                     form.querySelector('#edit-sisa-pembelanjaan').value = memberData.sisaPembelanjaan || 0;
                     editMemberOverlay.classList.add('visible');
@@ -958,14 +1053,18 @@
             const button = e.target.querySelector('button[type="submit"]');
             showLoading(button, true);
             const memberId = document.getElementById('edit-member-id').value;
+            // === PERUBAHAN 9: Sertakan data medsos saat update ===
             const updatedData = {
                 nama: document.getElementById('edit-nama').value,
                 alamat: document.getElementById('edit-alamat').value,
                 tanggalLahir: document.getElementById('edit-tanggal-lahir').value,
                 sumberInfo: document.getElementById('edit-sumber-info').value,
+                instagram: document.getElementById('edit-instagram').value.trim(),
+                tiktok: document.getElementById('edit-tiktok').value.trim(),
                 poin: parseInt(document.getElementById('edit-poin').value,10) || 0,
                 sisaPembelanjaan: parseInt(document.getElementById('edit-sisa-pembelanjaan').value,10) || 0
             };
+             // === AKHIR PERUBAHAN 9 ===
             try{
                 const memberDocRef = doc(db,"members", memberId);
                 await updateDoc(memberDocRef, updatedData);
@@ -981,6 +1080,81 @@
                 showLoading(button, false);
             }
         });
+
+        // === PERUBAHAN 10: SEMUA LOGIKA UNTUK FITUR REKAP MEMBER BARU ===
+        const showRekapData = (period) => {
+            const { start, end } = getDateRange(period);
+            const data = (fullMemberList.length > 0 ? fullMemberList : allMembers).map(m => ({
+                ...m,
+                tanggalDaftar: m.tanggalDaftar?.toDate?.() || new Date(m.tanggalDaftar)
+            }));
+            const filtered = data.filter(m => m.tanggalDaftar >= start && m.tanggalDaftar <= end);
+            renderRekapMemberList(filtered);
+        };
+
+        document.getElementById('rekap-member-baru-btn').addEventListener('click', async () => {
+            // Muat data jika belum ada
+            if (fullMemberList.length === 0) {
+                 await loadAndRenderAllMembers();
+            }
+            // Tampilkan data hari ini secara default
+            showRekapData('today');
+            rekapMemberOverlay.classList.add('visible');
+        });
+
+        document.getElementById('close-rekap-btn').addEventListener('click', () => rekapMemberOverlay.classList.remove('visible'));
+
+        document.getElementById('rekap-filter').addEventListener('click', (e) => {
+            if (e.target.tagName !== 'BUTTON') return;
+            document.querySelectorAll('#rekap-filter button').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            showRekapData(e.target.dataset.period);
+        });
+
+        document.getElementById('rekap-member-list').addEventListener('click', async (e) => {
+            const button = e.target.closest('.toggle-verify-btn');
+            if (!button) return;
+
+            const memberId = button.dataset.id;
+            const currentStatus = button.dataset.verified === 'true';
+            const newStatus = !currentStatus;
+
+            showLoading(button, true);
+            try {
+                const memberDocRef = doc(db, "members", memberId);
+                await updateDoc(memberDocRef, { isVerified: newStatus });
+
+                // Update data lokal agar UI sinkron tanpa reload
+                const memberIndex = fullMemberList.findIndex(m => m.id === memberId);
+                if (memberIndex > -1) {
+                    fullMemberList[memberIndex].isVerified = newStatus;
+                }
+                 const memberIndexAll = allMembers.findIndex(m => m.id === memberId);
+                if (memberIndexAll > -1) {
+                    allMembers[memberIndexAll].isVerified = newStatus;
+                }
+
+                // Update UI secara langsung
+                const listItem = document.getElementById(`rekap-item-${memberId}`);
+                const statusBadge = listItem.querySelector('.verification-status');
+                statusBadge.textContent = newStatus ? 'Terverifikasi' : 'Tidak Terverifikasi';
+                statusBadge.className = `verification-status ${newStatus ? 'verified' : 'unverified'}`;
+                
+                button.dataset.verified = newStatus;
+                button.querySelector('.btn-text').textContent = newStatus ? 'Tandai Unverified' : 'Tandai Verified';
+                button.querySelector('.material-symbols-outlined').textContent = newStatus ? 'block' : 'check_circle';
+                button.className = `btn ${newStatus ? 'btn-warning' : 'btn-primary'} toggle-verify-btn`;
+
+                showStatus("Status verifikasi berhasil diubah.");
+
+            } catch (err) {
+                showStatus("Gagal mengubah status verifikasi.", true);
+                console.error("Verification toggle error:", err);
+            } finally {
+                showLoading(button, false);
+            }
+        });
+        // === AKHIR PERUBAHAN 10 ===
 
         // Init data + chart
         await fetchPointRewards();
