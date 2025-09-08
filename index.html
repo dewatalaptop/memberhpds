@@ -26,7 +26,6 @@
         .nav{display:flex; background:#FDFDFD; border-bottom:1px solid var(--border-color)}
         .nav-button{flex:1; padding:15px; background:transparent; border:none; border-bottom:4px solid transparent; color:var(--text-dark); cursor:pointer; font-size:.95em; font-weight:600; transition:all .3s; opacity:.6}
         .nav-button:hover{opacity:1}
-        /* FIX: border-bottom 4px (bukan 44px) */
         .nav-button.active{opacity:1; color:var(--primary-color); border-bottom:4px solid var(--primary-color)}
 
         main{padding:25px}
@@ -59,17 +58,14 @@
         .btn.loading .spinner{display:block}
         @keyframes spin{to{transform:rotate(360deg)}}
 
-        /* Status message – FIX: kelas sinkron & transisi */
         #status-message{padding:14px; margin-top:16px; border-radius:8px; opacity:0; visibility:hidden; transform:translateY(6px); transition:all .25s ease}
         #status-message.visible{opacity:1; visibility:visible; transform:translateY(0)}
         #status-message.success{background:#DFF0D8; color:#3C763D; border:1px solid #D6E9C6}
         #status-message.error{background:#F2DEDE; color:#A94442; border:1px solid #EBCCD1}
 
-        /* Notifikasi ultah */
         .birthday-notification{padding:15px; background:#FFEB3B; color:#333; border:1px solid #FFC107; border-radius:8px; margin-bottom:20px; text-align:center; font-weight:600; display:none}
         .birthday-notification.show{display:block}
 
-        /* Overlay */
         .overlay{position:fixed; inset:0; background:rgba(0,0,0,.8); backdrop-filter:blur(8px); z-index:1000; display:flex; justify-content:center; align-items:center; padding:20px; opacity:0; visibility:hidden; transition:opacity .4s ease, visibility .4s ease}
         .overlay.visible{opacity:1; visibility:visible}
         .overlay-content{background:var(--bg-white); padding:20px; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,.3); width:calc(100% - 40px); max-width:700px; max-height:90vh; overflow:auto; transform:scale(.96); transition:transform .3s cubic-bezier(.2,.8,.2,1)}
@@ -109,7 +105,6 @@
 
         .chart-container{margin-top:20px; padding:16px; border-radius:12px; background:#FDFDFD; border:1px solid var(--border-color)}
         .chart-container h3{margin:0 0 12px 0}
-        /* FIX: tinggi kanvas agar selalu tampak & responsif */
         #info-source-chart{width:100% !important; height:320px !important; display:block}
         @media (max-width:480px){ #info-source-chart{height:260px !important} }
 
@@ -141,7 +136,6 @@
     </div>
 
     <main>
-        <!-- Cari Member -->
         <section id="search-section" class="section active">
             <h2>Cari & Info Member</h2>
             <form id="search-form" autocomplete="off">
@@ -157,7 +151,6 @@
             </form>
         </section>
 
-        <!-- Daftar Member -->
         <section id="register-section" class="section">
             <h2>Pendaftaran Member Baru</h2>
             <form id="register-form">
@@ -187,7 +180,6 @@
             </button>
         </section>
 
-        <!-- Reward -->
         <section id="rewards-section" class="section">
             <h2>Pengaturan Reward</h2>
             <div id="reward-options" class="btn-options">
@@ -227,7 +219,6 @@
             </div>
         </section>
 
-        <!-- Statistik -->
         <section id="stats-section" class="section">
             <h2>Statistik Member</h2>
             <div class="stats-filter">
@@ -255,7 +246,6 @@
     </main>
 </div>
 
-<!-- Overlay Detail Member -->
 <div id="member-detail-overlay" class="overlay">
     <div class="overlay-content">
         <button id="back-to-search-btn" class="btn">
@@ -268,6 +258,7 @@
         <h3>Detail Member</h3>
         <p><strong>Nama:</strong> <span id="info-nama"></span></p>
         <p><strong>Poin Terkumpul:</strong> <span id="info-poin" class="poin"></span></p>
+        <p style="text-align:center; margin-top:-10px; margin-bottom: 20px;"><strong>Akumulasi Belanja:</strong> Rp <span id="info-sisa">0</span></p>
         <div id="claimable-rewards"></div>
 
         <div class="btn-options">
@@ -278,14 +269,14 @@
         </div>
 
         <div id="transaction-form">
-            <h4>Tambah Transaksi Baru</h4>
+            <h4>Tambah Transaksi & Poin</h4>
             <form id="add-transaction-form">
                 <div class="form-group">
                     <label for="transaction-amount">Nominal Transaksi (Rp)</label>
                     <input type="number" id="transaction-amount" placeholder="Contoh: 150000" required>
                 </div>
                 <button type="submit" class="btn btn-primary">
-                    <span class="btn-text">Simpan Transaksi</span>
+                    <span class="btn-text">Simpan & Hitung Poin</span>
                     <span class="material-symbols-outlined">save</span>
                     <span class="spinner"></span>
                 </button>
@@ -294,10 +285,10 @@
     </div>
 </div>
 
-<!-- Overlay Password -->
 <div id="password-prompt-overlay" class="overlay">
     <div class="overlay-content">
         <h3>Akses Terbatas</h3>
+        <p style="text-align:center; color: var(--danger-color);"><strong>Peringatan:</strong> Demi keamanan, sangat disarankan untuk mengimplementasikan Firebase Authentication.</p>
         <form id="password-form">
             <div class="form-group">
                 <label for="admin-password">Masukkan Password Admin</label>
@@ -314,7 +305,6 @@
     </div>
 </div>
 
-<!-- Overlay Semua Member -->
 <div id="all-members-overlay" class="overlay">
     <div class="overlay-content">
         <button id="close-all-members-btn" class="btn btn-secondary" style="width:auto; margin-bottom:20px;">
@@ -328,7 +318,6 @@
     </div>
 </div>
 
-<!-- Overlay Edit Member -->
 <div id="edit-member-overlay" class="overlay">
     <div class="overlay-content">
         <h3>Edit Data Member</h3>
@@ -346,6 +335,7 @@
                 </select>
             </div>
             <div class="form-group"><label for="edit-poin">Poin</label><input type="number" id="edit-poin" required></div>
+             <div class="form-group"><label for="edit-sisa-pembelanjaan">Sisa Pembelanjaan (Rp)</label><input type="number" id="edit-sisa-pembelanjaan" required></div>
             <button type="submit" class="btn btn-primary">
                 <span class="btn-text">Update Data</span>
                 <span class="material-symbols-outlined">save</span>
@@ -360,7 +350,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, deleteDoc, updateDoc, increment, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // --- FIREBASE ---
     const firebaseConfig = {
@@ -381,6 +371,7 @@
     let allMembers = [], allTransactions = [], allRedemptions = [];
     let fullMemberList = [];
     let infoSourceChart = null;
+    const POIN_THRESHOLD = 100000; // --- PERBAIKAN: Definisikan ambang batas poin sebagai konstanta
 
     const memberDetailOverlay   = document.getElementById('member-detail-overlay');
     const backToSearchBtn       = document.getElementById('back-to-search-btn');
@@ -396,14 +387,12 @@
         button.classList.toggle('loading', isLoading);
     };
 
-    // FIX: sinkron dengan CSS #status-message.success / .error
     const showStatus = (message, isError = false, targetElementId = 'status-message') => {
         const div = document.getElementById(targetElementId);
         if (!div) return;
         div.textContent = message;
-        div.className = ''; // reset
+        div.className = '';
         div.classList.add(isError ? 'error' : 'success', 'visible');
-        // auto-hide + reset class
         setTimeout(() => {
             div.classList.remove('visible','success','error');
             div.textContent = '';
@@ -414,11 +403,17 @@
         document.querySelectorAll('.overlay').forEach(o => o.classList.remove('visible'));
     };
 
+    // --- PERBAIKAN: Membuat format nomor HP lebih tangguh ---
     const formatPhoneNumber = (phoneNumber) => {
-        const s = (phoneNumber || '').trim();
-        if (s.startsWith('08')) return '628' + s.substring(2);
-        if (s.startsWith('+62')) return s.substring(1);
-        return s;
+        const s = (phoneNumber || '').replace(/\D/g, ''); // Hapus semua non-digit
+        if (s.startsWith('08')) return '62' + s.substring(1);
+        if (s.startsWith('62')) return s;
+        if (s.startsWith('8')) return '62' + s;
+        return s; // Fallback
+    };
+    
+    const formatCurrency = (number) => {
+        return new Intl.NumberFormat('id-ID').format(number || 0);
     };
 
     const getBirthdayReward = (memberTanggalLahir) => {
@@ -492,7 +487,6 @@
         }catch(err){ console.error("Gagal memuat reward ultah:", err); }
     };
 
-    // --- CLAIMABLE REWARDS (FIX: isi lengkap & fallback jelas) ---
     const displayClaimableRewards = (memberPoints) => {
         const container = document.getElementById('claimable-rewards');
         const affordableRewards = allPointRewards.filter(r => (r.points || 0) <= (memberPoints || 0));
@@ -571,11 +565,7 @@
         infoSourceChart = new Chart(ctx, {
             type: 'doughnut',
             data: { labels: [], datasets: [{ label:'Sumber Info', data: [], backgroundColor: ['#00796B','#F57C00','#4CAF50','#FFC107','#2196F3','#8e44ad','#2ecc71'], hoverOffset:4 }] },
-            options: {
-                responsive:true,
-                maintainAspectRatio:false,
-                plugins:{ legend:{ position:'bottom' } }
-            }
+            options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
         });
     };
 
@@ -616,12 +606,12 @@
             return;
         }
         listEl.innerHTML = membersToRender.map(member => {
-            const formattedNumber = formatPhoneNumber(member.nomorHp);
+            const waNumber = formatPhoneNumber(member.nomorHp);
             const birthdayRewardName = getBirthdayReward(member.tanggalLahir);
             const birthdayMessage = birthdayRewardName
                 ? `Halo ${member.nama}, selamat ulang tahun! Dolan Sawah punya penawaran spesial untukmu: *${birthdayRewardName}*. Langsung datang ke resto dan tukar reward spesialmu! 🎉🥳`
                 : `Halo ${member.nama}, ada info terbaru nih dari Dolan Sawah!`;
-            const whatsappLink = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(birthdayMessage)}`;
+            const whatsappLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(birthdayMessage)}`;
 
             return `
                 <li class="member-list-item" id="member-item-${member.id}">
@@ -632,7 +622,7 @@
                     <div class="member-list-item-actions">
                         <a href="${whatsappLink}" target="_blank" class="btn btn-info"><span class="btn-text">WhatsApp</span><span class="material-symbols-outlined">chat</span></a>
                         <button class="btn btn-info edit-member-btn" data-id="${member.id}">Edit</button>
-                        <button class="btn btn-danger delete-member-btn" data-id="${member.id}">Hapus</button>
+                        <button class="btn btn-danger delete-member-btn" data-id="${member.id}" data-name="${member.nama}">Hapus</button>
                     </div>
                 </li>
             `;
@@ -659,6 +649,9 @@
                     document.getElementById('info-nama').textContent = member.nama;
                     const currPoint = member.poin || 0;
                     document.getElementById('info-poin').textContent = currPoint;
+                    // --- PERBAIKAN: Tampilkan juga sisa pembelanjaan ---
+                    document.getElementById('info-sisa').textContent = formatCurrency(member.sisaPembelanjaan);
+                    
                     displayClaimableRewards(currPoint);
 
                     const birthdayRewardName = getBirthdayReward(member.tanggalLahir);
@@ -689,9 +682,9 @@
             e.preventDefault();
             const button = e.target.querySelector('button');
             showLoading(button, true);
+            const form = e.target;
+            const nomorHp = form.querySelector('#nomor-hp').value.trim();
             try{
-                const form = e.target;
-                const nomorHp = form.querySelector('#nomor-hp').value.trim();
                 const docRef  = doc(db,"members", nomorHp);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) throw new Error("Nomor HP ini sudah terdaftar sebagai member.");
@@ -702,11 +695,16 @@
                     tanggalLahir: form.querySelector('#tanggal-lahir').value,
                     sumberInfo: form.querySelector('#sumber-info').value,
                     poin: 0,
+                    sisaPembelanjaan: 0, // --- PERBAIKAN: Inisialisasi field sisaPembelanjaan ---
                     tanggalDaftar: new Date()
                 });
                 showStatus("Member baru berhasil didaftarkan!");
                 form.reset();
+                // --- PERBAIKAN: UX Improvement, pindah dan cari member baru ---
                 document.getElementById('nav-search').click();
+                document.getElementById('search-hp').value = nomorHp;
+                document.querySelector('#search-form button[type="submit"]').click();
+                
                 await fetchAllStatsData();
                 updateStatsUI('today');
             }catch(err){
@@ -716,23 +714,61 @@
             }
         });
 
-        // Transaksi
+        // --- PERBAIKAN: Logika Transaksi & Perhitungan Poin ---
         document.getElementById('add-transaction-form').addEventListener('submit', async e => {
             e.preventDefault();
             const button = e.target.querySelector('button');
+            const amountInput = document.getElementById('transaction-amount');
+            const amount = parseInt(amountInput.value, 10);
+
+            if (!amount || !currentMemberId || amount <= 0) {
+                showStatus("Masukkan nominal transaksi yang valid.", true);
+                return;
+            }
+            
             showLoading(button, true);
-            try{
-                const amount = parseInt(document.getElementById('transaction-amount').value, 10);
-                if (!amount || !currentMemberId) throw new Error("Masukkan nominal valid.");
-                await addDoc(collection(db,"transactions"), { memberId: currentMemberId, nominal: amount, tanggal: new Date() });
-                showStatus("Transaksi berhasil disimpan! Poin akan diupdate oleh sistem.");
+            const memberDocRef = doc(db, "members", currentMemberId);
+
+            try {
+                // Gunakan Firestore Transaction untuk memastikan data konsisten
+                let pointsGained = 0;
+                await runTransaction(db, async (transaction) => {
+                    const memberDoc = await transaction.get(memberDocRef);
+                    if (!memberDoc.exists()) {
+                        throw new Error("Member tidak ditemukan.");
+                    }
+
+                    const data = memberDoc.data();
+                    const oldRemainder = data.sisaPembelanjaan || 0;
+                    const totalForPoints = amount + oldRemainder;
+                    
+                    pointsGained = Math.floor(totalForPoints / POIN_THRESHOLD);
+                    const newRemainder = totalForPoints % POIN_THRESHOLD;
+
+                    transaction.update(memberDocRef, {
+                        poin: increment(pointsGained),
+                        sisaPembelanjaan: newRemainder
+                    });
+                });
+                
+                // Catat transaksi di koleksi terpisah
+                await addDoc(collection(db, "transactions"), { 
+                    memberId: currentMemberId, 
+                    nominal: amount, 
+                    poinDidapat: pointsGained,
+                    tanggal: new Date() 
+                });
+
+                showStatus(`Transaksi berhasil! Member mendapat ${pointsGained} poin.`);
                 e.target.reset();
                 memberDetailOverlay.classList.remove('visible');
                 await fetchAllStatsData();
                 updateStatsUI('today');
-            }catch(err){
+
+            } catch (err) {
                 showStatus(err.message || "Gagal menyimpan transaksi.", true);
-            }finally{
+                console.error("Transaction failed: ", err);
+            } finally {
                 showLoading(button, false);
             }
         });
@@ -750,7 +786,6 @@
                 await updateDoc(memberDocRef, { poin: increment(-pointsCost) });
                 await addDoc(collection(db,"redemptions"), { memberId: currentMemberId, rewardName: name, pointsSpent: pointsCost, tanggal:new Date() });
 
-                // update UI langsung
                 const poinDisplay = document.getElementById('info-poin');
                 const newPoints = Math.max(0, (parseInt(poinDisplay.textContent,10) || 0) - pointsCost);
                 poinDisplay.textContent = newPoints;
@@ -792,7 +827,6 @@
             }
         });
 
-        // Tambah reward ultah
         document.getElementById('add-birthday-reward-form').addEventListener('submit', async e => {
             e.preventDefault();
             const button = e.target.querySelector('button');
@@ -855,7 +889,6 @@
             updateStatsUI(e.target.dataset.period);
         });
 
-        // Akses semua member
         document.getElementById('show-all-members-btn').addEventListener('click', () => {
             passwordPromptOverlay.classList.add('visible');
             document.getElementById('admin-password').focus();
@@ -871,7 +904,8 @@
                 await loadAndRenderAllMembers();
                 allMembersOverlay.classList.add('visible');
             }else{
-                showStatus("Password salah!", true);
+                showStatus("Password salah!", true, 'status-message'); // Menampilkan pesan error di main window
+                e.target.reset();
             }
         });
 
@@ -883,10 +917,13 @@
         document.getElementById('close-all-members-btn').addEventListener('click', () => allMembersOverlay.classList.remove('visible'));
 
         document.getElementById('all-members-list').addEventListener('click', async (e) => {
-            const target = e.target;
-            const memberId = target.dataset.id;
-            if (target.classList.contains('delete-member-btn')){
-                if (!confirm(`Yakin ingin menghapus member dengan HP ${memberId}? Data tidak bisa dikembalikan.`)) return;
+            const button = e.target.closest('button');
+            if (!button) return;
+
+            const { id: memberId, name: memberName } = button.dataset;
+            
+            if (button.classList.contains('delete-member-btn')){
+                if (!confirm(`Yakin ingin menghapus member "${memberName}" (${memberId})? Data tidak bisa dikembalikan.`)) return;
                 try{
                     await deleteDoc(doc(db,"members", memberId));
                     showStatus("Member berhasil dihapus.");
@@ -898,7 +935,7 @@
                     showStatus("Gagal menghapus member.", true);
                     console.error("Delete error:", err);
                 }
-            }else if (target.classList.contains('edit-member-btn')){
+            }else if (button.classList.contains('edit-member-btn')){
                 const memberData = fullMemberList.find(m => m.id === memberId);
                 if (memberData){
                     const form = document.getElementById('edit-member-form');
@@ -909,6 +946,7 @@
                     form.querySelector('#edit-tanggal-lahir').value = memberData.tanggalLahir || '';
                     form.querySelector('#edit-sumber-info').value = memberData.sumberInfo || '';
                     form.querySelector('#edit-poin').value = memberData.poin || 0;
+                    form.querySelector('#edit-sisa-pembelanjaan').value = memberData.sisaPembelanjaan || 0;
                     editMemberOverlay.classList.add('visible');
                 }
             }
@@ -925,7 +963,8 @@
                 alamat: document.getElementById('edit-alamat').value,
                 tanggalLahir: document.getElementById('edit-tanggal-lahir').value,
                 sumberInfo: document.getElementById('edit-sumber-info').value,
-                poin: parseInt(document.getElementById('edit-poin').value,10) || 0
+                poin: parseInt(document.getElementById('edit-poin').value,10) || 0,
+                sisaPembelanjaan: parseInt(document.getElementById('edit-sisa-pembelanjaan').value,10) || 0
             };
             try{
                 const memberDocRef = doc(db,"members", memberId);
@@ -950,7 +989,6 @@
         initializeChart();
         updateStatsUI('today');
 
-        // Reflow chart ketika overlay / tab berubah ukuran
         window.addEventListener('resize', () => { if (infoSourceChart) infoSourceChart.resize(); });
     });
 </script>
