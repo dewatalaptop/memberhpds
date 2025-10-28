@@ -522,11 +522,10 @@
     </div>
 </div>
 <script type="module">
-    // ========= MODIFIKASI IMPORT DIMULAI DI SINI =========
+    // (Import dan konfigurasi Firebase tetap sama)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, deleteDoc, updateDoc, increment, runTransaction, serverTimestamp, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    // ========= MODIFIKASI IMPORT BERAKHIR DI SINI =========
 
     const firebaseConfig = {
         apiKey: "AIzaSyAEzWDI9ZWlc7NnUTDBbx7wednnUVeS9Ao",
@@ -560,7 +559,6 @@
     const adminContentView = document.getElementById('admin-content-view');
     const globalLoader = document.getElementById('global-loader');
 
-    // ========= MODIFIKASI: Tambah Variabel Overlay Baru =========
     const transactionHistoryOverlay = document.getElementById('transaction-history-overlay');
     const closeHistoryBtn = document.getElementById('close-history-btn');
 
@@ -595,10 +593,8 @@
         return new Intl.NumberFormat('id-ID').format(number || 0);
     };
     
-    // ========= MODIFIKASI: Fungsi Helper Baru untuk Format Waktu Detail =========
     const formatTimestamp = (date) => {
         if (!date) return 'Data tanggal tidak valid';
-        // Menampilkan tanggal dan waktu lengkap (termasuk jam, menit, detik)
         return date.toLocaleString('id-ID', {
             day: '2-digit',
             month: 'long',
@@ -606,7 +602,7 @@
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
-            hour12: false // Gunakan format 24 jam jika preferensi
+            hour12: false
         });
     };
 
@@ -866,7 +862,6 @@
         }
     };
 
-    // ========= MODIFIKASI: Menambahkan tombol "Riwayat" =========
     const renderMemberList = (membersToRender) => {
         const listEl = document.getElementById('all-members-list');
         if (!membersToRender.length){
@@ -930,7 +925,6 @@
         setupNavigation();
         setupAdminTabs(); 
         
-        // ========= MODIFIKASI: Tambah event listener untuk tombol tutup riwayat =========
         closeHistoryBtn.addEventListener('click', () => {
             transactionHistoryOverlay.classList.remove('visible');
         });
@@ -1255,7 +1249,7 @@
             renderMemberList(filtered);
         });
 
-        // ========= MODIFIKASI: Menambahkan logika untuk tombol "Riwayat" =========
+        
         document.getElementById('all-members-list').addEventListener('click', async (e) => {
             const button = e.target.closest('button');
             if (!button) return;
@@ -1288,39 +1282,53 @@
                     editMemberOverlay.classList.add('visible');
                 }
             
+            // ========= PERBAIKAN DIMULAI DI SINI =========
             } else if (button.classList.contains('view-history-btn')) {
-                // Logika untuk tombol "Riwayat"
                 globalLoader.classList.add('visible');
                 document.getElementById('history-member-name').textContent = memberName;
                 const historyListEl = document.getElementById('history-list');
                 historyListEl.innerHTML = '<li>Memuat riwayat...</li>';
 
                 try {
-                    // Query ke Firestore untuk data transaksi
+                    // 1. Query HANYA menggunakan 'where' (tanpa 'orderBy')
                     const transactionsRef = collection(db, "transactions");
-                    const q = query(transactionsRef, where("memberId", "==", memberId), orderBy("tanggal", "desc"));
+                    const q = query(transactionsRef, where("memberId", "==", memberId));
                     const querySnapshot = await getDocs(q);
 
                     if (querySnapshot.empty) {
                         historyListEl.innerHTML = '<li>Tidak ada riwayat transaksi ditemukan.</li>';
                     } else {
-                        // Render data transaksi
-                        historyListEl.innerHTML = querySnapshot.docs.map(doc => {
-                            const tx = doc.data();
-                            const txDate = tx.tanggal ? tx.tanggal.toDate() : null;
-                            
+                        
+                        // 2. Ubah hasil query ke array dan tambahkan objek Date
+                        const transactions = querySnapshot.docs.map(doc => {
+                            const data = doc.data();
+                            const txDate = data.tanggal ? data.tanggal.toDate() : new Date(0); // Pake tanggal awal jika null
+                            return {
+                                ...data,
+                                jsDate: txDate // Simpan sebagai objek Date
+                            };
+                        });
+
+                        // 3. Urutkan array menggunakan JavaScript (terbaru dulu)
+                        transactions.sort((a, b) => b.jsDate.getTime() - a.jsDate.getTime());
+
+                        // 4. Render data yang sudah diurutkan
+                        historyListEl.innerHTML = transactions.map(tx => {
                             return `
                                 <li class="data-list-item">
                                     <span>
                                         <strong>Rp ${formatCurrency(tx.nominal)}</strong>
-                                        <small>${txDate ? formatTimestamp(txDate) : 'Tanggal tidak diketahui'}</small>
+                                        <small>${formatTimestamp(tx.jsDate)}</small>
                                     </span>
                                     <strong style="color:var(--accent-color)">+${tx.poinDidapat} Poin</strong>
                                 </li>
                             `;
                         }).join('');
                     }
+                    
+                    // 5. Tampilkan overlay SETELAH semuanya siap
                     transactionHistoryOverlay.classList.add('visible');
+
                 } catch (err) {
                     console.error("Gagal memuat riwayat:", err);
                     showStatus("Gagal memuat riwayat transaksi.", true);
@@ -1328,6 +1336,7 @@
                     globalLoader.classList.remove('visible');
                 }
             }
+            // ========= PERBAIKAN BERAKHIR DI SINI =========
         });
 
         document.getElementById('cancel-edit-btn').addEventListener('click', () => editMemberOverlay.classList.remove('visible'));
@@ -1411,5 +1420,6 @@
         }
     });
 </script>
+
 </body>
 </html>
