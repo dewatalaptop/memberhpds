@@ -117,6 +117,14 @@
         .data-list{list-style:none; padding:0; margin-top:12px}
         .data-list-item{padding:10px 6px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; font-size:.98em}
         .data-list-item:last-child{border-bottom:none}
+        
+        /* MODIFIKASI: Style untuk list riwayat */
+        .data-list-item small {
+            display: block;
+            color: #555;
+            font-size: 0.9em;
+            margin-top: 2px;
+        }
 
         #all-members-list, #rekap-member-list {list-style:none; padding:0; margin-top:10px}
         .member-list-item{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; padding:12px; border-radius:8px; margin-bottom:8px; background:#F9F9F9; border:1px solid var(--border-color)}
@@ -362,7 +370,7 @@
                         <h5>Reward Top 5 Aktif Saat Ini</h5>
                         <p id="current-top-member-reward" style="font-weight: 600; color: var(--primary-color);">Belum diatur.</p>
                     </div>
-                    </div>
+                </div>
 
                 <div id="admin-tab-stats" class="admin-tab-pane">
                     <h3>Statistik Member</h3>
@@ -500,10 +508,25 @@
     </div>
 </div>
 
+<div id="transaction-history-overlay" class="overlay">
+    <div class="overlay-content">
+        <button id="close-history-btn" class="btn btn-secondary" style="width:auto; margin-bottom:20px;">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <h3>Riwayat Transaksi</h3>
+        <p style="text-align:center; font-size: 1.1em; margin-top:-15px; margin-bottom:20px;">
+            Member: <strong id="history-member-name">-</strong>
+        </p>
+        <ul id="history-list" class="data-list" style="max-height: 50vh; overflow-y: auto;">
+            </ul>
+    </div>
+</div>
 <script type="module">
+    // ========= MODIFIKASI IMPORT DIMULAI DI SINI =========
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, deleteDoc, updateDoc, increment, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, deleteDoc, updateDoc, increment, runTransaction, serverTimestamp, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    // ========= MODIFIKASI IMPORT BERAKHIR DI SINI =========
 
     const firebaseConfig = {
         apiKey: "AIzaSyAEzWDI9ZWlc7NnUTDBbx7wednnUVeS9Ao",
@@ -519,7 +542,7 @@
 
     let allPointRewards = [];
     let allBirthdayRewards = [];
-    let topMemberRewardName = null; // <-- MODIFIKASI: Variabel global untuk reward top 5
+    let topMemberRewardName = null;
     let currentMemberId = null;
     let currentMemberData = {};
     let allMembers = [], allTransactions = [], allRedemptions = [];
@@ -536,6 +559,10 @@
     const adminLoginView = document.getElementById('admin-login-view');
     const adminContentView = document.getElementById('admin-content-view');
     const globalLoader = document.getElementById('global-loader');
+
+    // ========= MODIFIKASI: Tambah Variabel Overlay Baru =========
+    const transactionHistoryOverlay = document.getElementById('transaction-history-overlay');
+    const closeHistoryBtn = document.getElementById('close-history-btn');
 
 
     const showLoading = (button, isLoading) => {
@@ -567,6 +594,21 @@
     const formatCurrency = (number) => {
         return new Intl.NumberFormat('id-ID').format(number || 0);
     };
+    
+    // ========= MODIFIKASI: Fungsi Helper Baru untuk Format Waktu Detail =========
+    const formatTimestamp = (date) => {
+        if (!date) return 'Data tanggal tidak valid';
+        // Menampilkan tanggal dan waktu lengkap (termasuk jam, menit, detik)
+        return date.toLocaleString('id-ID', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false // Gunakan format 24 jam jika preferensi
+        });
+    };
 
     const getBirthdayReward = (memberTanggalLahir) => {
         if (!memberTanggalLahir) return null;
@@ -578,18 +620,14 @@
         return null;
     };
 
-    // BARU: Fungsi untuk parsing kota/kabupaten dari string alamat
     const parseCityFromAddress = (address) => {
         if (!address || typeof address !== 'string') return 'Tidak Diketahui';
         const parts = address.split(',').map(p => p.trim());
         if (parts.length > 1) {
-            // Coba ambil bagian sebelum terakhir, seringkali itu kota/kabupaten
             let city = parts[parts.length - 2];
-            // Heuristik sederhana untuk membersihkan nama kota dari kata seperti "Kota", "Kab."
             city = city.replace(/^(Kota|Kabupaten|Kab\.)\s*/i, '');
             return city.charAt(0).toUpperCase() + city.slice(1);
         }
-        // Jika hanya ada satu bagian, anggap itu adalah kotanya
         if (parts.length === 1 && parts[0] !== '') {
              let city = parts[0];
              city = city.replace(/^(Kota|Kabupaten|Kab\.)\s*/i, '');
@@ -598,18 +636,14 @@
         return 'Tidak Diketahui';
     };
 
-    // BARU: Fungsi untuk merender daftar statistik berdasarkan alamat
     const renderAddressStats = (addressCounts) => {
         const listEl = document.getElementById('address-stats-list');
         listEl.innerHTML = '';
-        // Urutkan berdasarkan jumlah pengunjung, dari yang terbanyak
         const sortedAddresses = Object.entries(addressCounts).sort(([, a], [, b]) => b - a);
-
         if (sortedAddresses.length === 0) {
             listEl.innerHTML = '<li>Tidak ada data pengunjung untuk periode ini.</li>';
             return;
         }
-
         sortedAddresses.forEach(([address, count]) => {
             const li = document.createElement('li');
             li.className = 'data-list-item';
@@ -618,19 +652,14 @@
         });
     };
     
-    // BARU: Fungsi untuk memproses data statistik alamat
     const updateAddressStats = (visitingMemberIds) => {
-        // Buat peta (Map) dari nomorHp ke alamat untuk pencarian yang lebih cepat
         const memberAddressMap = new Map(allMembers.map(m => [m.nomorHp, m.alamat]));
-    
         const addressCounts = {};
         visitingMemberIds.forEach(memberId => {
             const address = memberAddressMap.get(memberId);
             const city = parseCityFromAddress(address);
-            // Kelompokkan hasil perhitungan
             addressCounts[city] = (addressCounts[city] || 0) + 1;
         });
-        
         renderAddressStats(addressCounts);
     };
 
@@ -710,7 +739,6 @@
         }catch(err){ console.error("Gagal memuat reward ultah:", err); }
     };
 
-    // <-- MODIFIKASI: Fungsi baru untuk mengambil reward top 5 -->
     const fetchTopMemberReward = async () => {
         try {
             const docRef = doc(db, "settings", "topMemberReward");
@@ -778,7 +806,6 @@
         return { start, end };
     };
 
-    // MODIFIKASI: Memanggil fungsi update statistik alamat
     const updateStatsUI = (period) => {
         let filteredMembers = allMembers;
         let filteredTransactions = allTransactions;
@@ -797,7 +824,7 @@
         document.getElementById('stat-redeemed-rewards').textContent= filteredRedemptions.length;
 
         updateInfoSourceChart();
-        updateAddressStats(visitingMemberIds); // PANGGILAN FUNGSI BARU
+        updateAddressStats(visitingMemberIds);
     };
 
     const initializeChart = () => {
@@ -839,6 +866,7 @@
         }
     };
 
+    // ========= MODIFIKASI: Menambahkan tombol "Riwayat" =========
     const renderMemberList = (membersToRender) => {
         const listEl = document.getElementById('all-members-list');
         if (!membersToRender.length){
@@ -852,6 +880,7 @@
                     <span>${member.nomorHp}</span>
                 </div>
                 <div class="member-list-item-actions">
+                    <button class="btn btn-secondary view-history-btn" data-id="${member.id}" data-name="${member.nama}" style="background-color: var(--primary-light); color: white;">Riwayat</button>
                     <button class="btn btn-info edit-member-btn" data-id="${member.id}">Edit</button>
                     <button class="btn btn-danger delete-member-btn" data-id="${member.id}" data-name="${member.nama}">Hapus</button>
                 </div>
@@ -901,6 +930,11 @@
         setupNavigation();
         setupAdminTabs(); 
         
+        // ========= MODIFIKASI: Tambah event listener untuk tombol tutup riwayat =========
+        closeHistoryBtn.addEventListener('click', () => {
+            transactionHistoryOverlay.classList.remove('visible');
+        });
+
         onAuthStateChanged(auth, user => {
             if (user) {
                 adminLoginView.style.display = 'none';
@@ -1146,26 +1180,22 @@
                 }catch(err){ showStatus(err.message, true); }
                 finally{ showLoading(button, false); }
             
-            // <-- MODIFIKASI: Menambahkan event handler untuk form baru -->
             } else if (e.target.id === 'save-top-member-reward-form') {
                 const button = e.target.querySelector('button');
                 showLoading(button, true);
                 try {
                     const name = document.getElementById('top-member-reward-name').value.trim();
                     if (!name) throw new Error("Nama Reward harus diisi.");
-                    
                     await setDoc(doc(db, "settings", "topMemberReward"), { name: name }, { merge: true });
-                    
                     showStatus("Reward Top 5 berhasil disimpan!");
-                    topMemberRewardName = name; // Update variabel global
-                    document.getElementById('current-top-member-reward').textContent = name; // Update tampilan
+                    topMemberRewardName = name;
+                    document.getElementById('current-top-member-reward').textContent = name;
                 } catch (err) {
                     showStatus(err.message, true);
                 } finally {
                     showLoading(button, false);
                 }
             }
-            // <-- MODIFIKASI BERAKHIR DI SINI -->
         });
 
         adminSection.addEventListener('click', async e => {
@@ -1224,10 +1254,13 @@
             const filtered = fullMemberList.filter(m => (m.nomorHp || '').toLowerCase().includes(term));
             renderMemberList(filtered);
         });
+
+        // ========= MODIFIKASI: Menambahkan logika untuk tombol "Riwayat" =========
         document.getElementById('all-members-list').addEventListener('click', async (e) => {
             const button = e.target.closest('button');
             if (!button) return;
             const { id: memberId, name: memberName } = button.dataset;
+            
             if (button.classList.contains('delete-member-btn')){
                 if (!confirm(`Yakin ingin menghapus member "${memberName}" (${memberId})? Data tidak bisa dikembalikan.`)) return;
                 try{
@@ -1237,6 +1270,7 @@
                     await fetchAllStatsData();
                     showStatus("Member berhasil dihapus.");
                 }catch(err){ showStatus("Gagal menghapus member.", true); }
+            
             }else if (button.classList.contains('edit-member-btn')){
                 const memberData = fullMemberList.find(m => m.id === memberId);
                 if (memberData){
@@ -1252,6 +1286,46 @@
                     form.querySelector('#edit-poin').value = memberData.poin || 0;
                     form.querySelector('#edit-sisa-pembelanjaan').value = memberData.sisaPembelanjaan || 0;
                     editMemberOverlay.classList.add('visible');
+                }
+            
+            } else if (button.classList.contains('view-history-btn')) {
+                // Logika untuk tombol "Riwayat"
+                globalLoader.classList.add('visible');
+                document.getElementById('history-member-name').textContent = memberName;
+                const historyListEl = document.getElementById('history-list');
+                historyListEl.innerHTML = '<li>Memuat riwayat...</li>';
+
+                try {
+                    // Query ke Firestore untuk data transaksi
+                    const transactionsRef = collection(db, "transactions");
+                    const q = query(transactionsRef, where("memberId", "==", memberId), orderBy("tanggal", "desc"));
+                    const querySnapshot = await getDocs(q);
+
+                    if (querySnapshot.empty) {
+                        historyListEl.innerHTML = '<li>Tidak ada riwayat transaksi ditemukan.</li>';
+                    } else {
+                        // Render data transaksi
+                        historyListEl.innerHTML = querySnapshot.docs.map(doc => {
+                            const tx = doc.data();
+                            const txDate = tx.tanggal ? tx.tanggal.toDate() : null;
+                            
+                            return `
+                                <li class="data-list-item">
+                                    <span>
+                                        <strong>Rp ${formatCurrency(tx.nominal)}</strong>
+                                        <small>${txDate ? formatTimestamp(txDate) : 'Tanggal tidak diketahui'}</small>
+                                    </span>
+                                    <strong style="color:var(--accent-color)">+${tx.poinDidapat} Poin</strong>
+                                </li>
+                            `;
+                        }).join('');
+                    }
+                    transactionHistoryOverlay.classList.add('visible');
+                } catch (err) {
+                    console.error("Gagal memuat riwayat:", err);
+                    showStatus("Gagal memuat riwayat transaksi.", true);
+                } finally {
+                    globalLoader.classList.remove('visible');
                 }
             }
         });
@@ -1326,7 +1400,7 @@
                 fetchPointRewards(),
                 fetchBirthdayRewards(),
                 fetchAllStatsData(),
-                fetchTopMemberReward() // <-- MODIFIKASI: Memanggil fungsi baru saat load
+                fetchTopMemberReward()
             ]);
             initializeChart();
             updateStatsUI('today');
