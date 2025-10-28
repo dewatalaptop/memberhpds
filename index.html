@@ -345,7 +345,24 @@
                         <h5>Daftar Reward Ultah Aktif</h5>
                         <ul id="birthday-reward-list" class="reward-list-container"></ul>
                     </div>
-                </div>
+
+                    <div id="top-member-reward-container" class="reward-subsection">
+                        <h4>Reward Top 5 Member</h4>
+                        <form id="save-top-member-reward-form">
+                            <div class="form-group">
+                                <label for="top-member-reward-name">Nama Reward</label>
+                                <input type="text" id="top-member-reward-name" placeholder="Contoh: Member Sultan (Otomatis)" required>
+                                <small>Reward ini akan tampil otomatis di profil 5 member dengan poin tertinggi. Cukup atur satu nama reward.</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="btn-text">Simpan Reward Top 5</span>
+                                <span class="spinner"></span>
+                            </button>
+                        </form>
+                        <h5>Reward Top 5 Aktif Saat Ini</h5>
+                        <p id="current-top-member-reward" style="font-weight: 600; color: var(--primary-color);">Belum diatur.</p>
+                    </div>
+                    </div>
 
                 <div id="admin-tab-stats" class="admin-tab-pane">
                     <h3>Statistik Member</h3>
@@ -502,6 +519,7 @@
 
     let allPointRewards = [];
     let allBirthdayRewards = [];
+    let topMemberRewardName = null; // <-- MODIFIKASI: Variabel global untuk reward top 5
     let currentMemberId = null;
     let currentMemberData = {};
     let allMembers = [], allTransactions = [], allRedemptions = [];
@@ -690,6 +708,23 @@
             allBirthdayRewards = snapshot.docs.map(d => ({ id:d.id, ...d.data() }));
             renderList('birthday-reward-list', allBirthdayRewards, 'name');
         }catch(err){ console.error("Gagal memuat reward ultah:", err); }
+    };
+
+    // <-- MODIFIKASI: Fungsi baru untuk mengambil reward top 5 -->
+    const fetchTopMemberReward = async () => {
+        try {
+            const docRef = doc(db, "settings", "topMemberReward");
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                topMemberRewardName = docSnap.data().name;
+                document.getElementById('current-top-member-reward').textContent = topMemberRewardName;
+                document.getElementById('top-member-reward-name').value = topMemberRewardName;
+            } else {
+                document.getElementById('current-top-member-reward').textContent = "Belum diatur.";
+            }
+        } catch (err) {
+            console.error("Gagal memuat reward top 5:", err);
+        }
     };
 
     const displayClaimableRewards = (memberPoints) => {
@@ -1097,6 +1132,7 @@
                     await fetchPointRewards();
                 } catch (err) { showStatus(err.message, true); } 
                 finally { showLoading(button, false); }
+
             } else if (e.target.id === 'add-birthday-reward-form') {
                 const button = e.target.querySelector('button');
                 showLoading(button, true);
@@ -1109,7 +1145,27 @@
                     await fetchBirthdayRewards();
                 }catch(err){ showStatus(err.message, true); }
                 finally{ showLoading(button, false); }
+            
+            // <-- MODIFIKASI: Menambahkan event handler untuk form baru -->
+            } else if (e.target.id === 'save-top-member-reward-form') {
+                const button = e.target.querySelector('button');
+                showLoading(button, true);
+                try {
+                    const name = document.getElementById('top-member-reward-name').value.trim();
+                    if (!name) throw new Error("Nama Reward harus diisi.");
+                    
+                    await setDoc(doc(db, "settings", "topMemberReward"), { name: name }, { merge: true });
+                    
+                    showStatus("Reward Top 5 berhasil disimpan!");
+                    topMemberRewardName = name; // Update variabel global
+                    document.getElementById('current-top-member-reward').textContent = name; // Update tampilan
+                } catch (err) {
+                    showStatus(err.message, true);
+                } finally {
+                    showLoading(button, false);
+                }
             }
+            // <-- MODIFIKASI BERAKHIR DI SINI -->
         });
 
         adminSection.addEventListener('click', async e => {
@@ -1269,7 +1325,8 @@
             await Promise.all([
                 fetchPointRewards(),
                 fetchBirthdayRewards(),
-                fetchAllStatsData()
+                fetchAllStatsData(),
+                fetchTopMemberReward() // <-- MODIFIKASI: Memanggil fungsi baru saat load
             ]);
             initializeChart();
             updateStatsUI('today');
