@@ -47,6 +47,48 @@
         #lookup-status.success {background:#DFF0D8; color:#3C763D; border:1px solid #D6E9C6}
         #lookup-status.error {background:#F2DEDE; color:#A94442; border:1px solid #EBCCD1}
         
+        /* === CSS BARU UNTUK KOTAK PERINGATAN === */
+        #self-check-warning {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background-color: #FFFBEB; /* Kuning muda pucat */
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px; /* Sudut melengkung */
+            
+            /* Ini untuk 'belang-belang' di pinggiran */
+            border: 8px solid transparent;
+            border-image: repeating-linear-gradient(
+                -45deg,
+                var(--warning-color), /* #f0ad4e */
+                var(--warning-color) 10px,
+                #333 10px, /* var(--text-dark) */
+                #333 20px
+            );
+            border-image-slice: 1; /* Penting agar border-image bekerja */
+        }
+        #self-check-warning .material-symbols-outlined {
+            font-size: 2.2em;
+            color: var(--accent-hover); /* #EF6C00 */
+        }
+        #self-check-warning div {
+            flex: 1;
+        }
+        #self-check-warning strong {
+            color: var(--text-dark);
+            font-size: 1.1em;
+            display: block;
+        }
+        #self-check-warning p {
+            margin: 2px 0 0;
+            font-size: 0.9em;
+            line-height: 1.4;
+            color: #555;
+        }
+        /* === AKHIR DARI CSS BARU === */
+
+
         /* CSS Kartu Member (Tetap Sama) */
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes staggerIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -103,6 +145,14 @@
         <section id="lookup-view">
             <h2>Cek Kartu Member Anda</h2>
             <form id="member-lookup-form" autocomplete="off">
+                
+                <div id="self-check-warning">
+                    <span class="material-symbols-outlined">warning</span>
+                    <div>
+                        <strong>Perhatian!</strong>
+                        <p>Halaman ini hanya untuk memeriksa profil member Anda sendiri. Sistem akan mengirimkan SMS verifikasi ke nomor yang Anda masukkan.</p>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="member-hp">Masukkan Nomor HP Terdaftar</label>
                     <input type="tel" id="member-hp" placeholder="Contoh: 081234567890" required autofocus>
@@ -340,14 +390,13 @@
     // === AKHIR HELPER FUNCTIONS ===
 
 
-    // === EVENT LISTENERS ===
+    // === EVENT LISTENERS (Tidak ada perubahan di Javascript) ===
 
     document.addEventListener('DOMContentLoaded', () => {
         loadAllRewards();
         loadTop5Data();
     });
 
-    // MODIFIKASI: Form Lookup dengan Penanganan Error yang Baik
     lookupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const button = e.target.querySelector('button[type="submit"]');
@@ -392,17 +441,11 @@
             otpCodeInput.focus();
 
         } catch (err) {
-            // ======================================================
-            //          MODIFIKASI: PENANGANAN ERROR ELEGAN
-            // ======================================================
             console.error("DEBUG: Terjadi Error Saat Mengirim SMS:", err);
-
-            // Cek untuk error reCAPTCHA spesifik (-39 atau captcha-check-failed)
             if ( (err.code && err.code.includes('-39')) || 
                  (err.code && err.code.includes('auth/captcha-check-failed')) || 
                  (err.message && err.message.includes('reCAPTCHA')) ) 
             {
-                // Tampilkan pesan error yang BISA ditindaklanjuti oleh customer
                 showStatus("Gagal memuat verifikasi. Jika Anda menggunakan Ad-Blocker, VPN, atau Ekstensi Browser, coba nonaktifkan sementara atau gunakan browser lain.", true);
             
             } else if (err.code === 'auth/too-many-requests') {
@@ -412,10 +455,8 @@
                  showStatus("Nomor HP tidak valid. Pastikan formatnya benar (Contoh: 0812...)", true);
             
             } else {
-                // Error umum lainnya yang tidak kita duga
                 showStatus(`Terjadi kesalahan. Silakan coba lagi. (Code: ${err.code || 'unknown'})`, true);
             }
-            // ======================================================
 
             if (appVerifier) {
                 appVerifier.clear();
@@ -426,7 +467,6 @@
         }
     });
 
-    // LISTENER Form OTP (Tidak Berubah, sudah menangani error-nya sendiri)
     otpForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const button = e.target.querySelector('button[type="submit"]');
@@ -487,7 +527,6 @@
         } catch (err) {
             console.error("Error verifikasi OTP atau lookup:", err);
             
-            // MODIFIKASI: Penanganan error yang lebih baik di langkah ini
             if (err.code === 'auth/invalid-verification-code' || err.code === 'auth/credential-already-in-use') {
                 showStatus("Kode OTP yang Anda masukkan salah.", true);
             } else if (err.code === 'auth/code-expired') {
@@ -503,7 +542,6 @@
         }
     });
 
-    // Tombol Kembali (Tidak Berubah, sudah memiliki logika cleanup)
     backButton.addEventListener('click', () => {
         cardView.classList.remove('visible');
         setTimeout(() => {
@@ -521,6 +559,7 @@
             document.getElementById('recaptcha-container').innerHTML = '';
         }, 400); 
     });
+    
     backButtonOtp.addEventListener('click', () => {
         otpView.style.display = 'none';
         lookupView.style.display = 'block';
