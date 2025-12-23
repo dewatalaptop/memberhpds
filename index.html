@@ -941,7 +941,7 @@
             : '<h4>Reward yang Bisa Diklaim:</h4><p>Poin belum cukup untuk menukar reward.</p>';
     };
 
-    // --- REKAP & WHATSAPP LOGIC (FIXED) ---
+    // --- REKAP & WHATSAPP LOGIC (UPDATE: TAMBAH ALAMAT) ---
     const renderRekapMemberList = (membersToRender) => {
         // Simpan data untuk Share WA
         currentRekapData = membersToRender;
@@ -963,6 +963,7 @@
             const instagramUser = (member.instagram || '-').replace('@','');
             const tiktokUser = (member.tiktok || '-').replace('@','');
             const joinDate = formatTimestamp(member.tanggalDaftar);
+            const address = member.alamat || '-'; // Ambil data alamat
 
             return `
                 <li class="rekap-card ${isVerified ? 'verified' : 'unverified'}" id="rekap-item-${member.id}">
@@ -980,6 +981,10 @@
                     </div>
                     
                     <div class="rekap-card-body">
+                         <div class="rekap-row">
+                            <span class="rekap-label">Alamat:</span>
+                            <span class="rekap-val" style="text-transform:capitalize;">${address}</span>
+                        </div>
                         <div class="rekap-row">
                             <span class="rekap-label">Tgl Daftar:</span>
                             <span class="rekap-val">${joinDate} WIB</span>
@@ -1034,9 +1039,11 @@
             const sumber = member.sumberInfo || '-';
             const tglDaftar = formatTimestamp(member.tanggalDaftar);
             const statusVerif = member.isVerified ? '✅ VERIFIED' : '❌ UNVERIFIED';
+            const address = member.alamat || '-'; // Ambil data alamat
 
             message += `*${index + 1}. ${member.nama.toUpperCase()}*\n`;
             message += `   📱 WA: ${member.nomorHp}\n`;
+            message += `   🏠 Alamat: ${address}\n`; // UPDATE: Tampilkan Alamat
             message += `   🔰 Status: ${statusVerif}\n`;
             message += `   📅 Join: ${tglDaftar}\n`;
             message += `   ℹ️ Info: ${sumber}\n`;
