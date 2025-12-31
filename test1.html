@@ -15,7 +15,7 @@
             --border-color:#E0E0E0; --shadow:0 4px 6px rgba(0,0,0,.1); --font-body:'Poppins',sans-serif;
             --danger-color:#d9534f; --danger-hover:#c9302c; --info-color:#5bc0de; --info-hover:#31b0d5;
             --warning-color:#f0ad4e; --warning-hover:#ec971f;
-            --special-color:#673AB7; /* Warna Khusus Member Spesial */
+            --special-color:#673AB7; /* Warna Ungu Khusus Member Spesial */
             --wa-color: #25D366; --wa-dark: #128C7E;
         }
 
@@ -23,9 +23,9 @@
         body{font-family:var(--font-body); background:var(--bg-light); color:var(--text-dark); margin:0; padding:20px}
         .container{width:100%; max-width:700px; margin:0 auto; background:var(--bg-white); border-radius:12px; box-shadow:var(--shadow); overflow:hidden}
 
-        header{background:linear-gradient(135deg,var(--primary-light),var(--primary-color)); color:var(--text-light); padding:20px; text-align:center; cursor: pointer; user-select: none;}
+        /* Header anti-blok teks saat klik cepat */
+        header{background:linear-gradient(135deg,var(--primary-light),var(--primary-color)); color:var(--text-light); padding:20px; text-align:center; cursor: pointer; user-select: none; -webkit-user-select: none;}
         header h1{margin:0; font-size:1.8em; font-weight:700}
-        
         header:active { opacity: 0.9; transform: scale(0.99); }
 
         .nav{display:flex; background:#FDFDFD; border-bottom:1px solid var(--border-color)}
@@ -48,7 +48,6 @@
         .form-group input:focus{border-color:var(--primary-color); outline:none}
         .form-group small {font-size: 0.8em; color: #777; margin-top: 4px; display: block;}
 
-
         .btn{width:100%; padding:15px; border:none; border-radius:8px; cursor:pointer; font-size:1.05em; font-weight:600; transition:all .3s; display:flex; justify-content:center; align-items:center; gap:8px}
         .btn .material-symbols-outlined{font-size:1.2em}
         .btn-primary{background:var(--accent-color); color:var(--text-light)}
@@ -61,10 +60,8 @@
         .btn-info:hover{background:var(--info-hover)}
         .btn-warning{background:var(--warning-color); color:var(--text-light)}
         .btn-warning:hover{background:var(--warning-hover)}
-        
         .btn-special{background:var(--special-color); color:var(--text-light);}
         .btn-special:hover{background:#512DA8;}
-
         .btn:disabled{opacity:.7; cursor:not-allowed}
 
         .spinner{width:20px; height:20px; border:3px solid rgba(255,255,255,.3); border-top-color:var(--text-light); border-radius:50%; display:none; animation:spin 1s linear infinite}
@@ -73,10 +70,39 @@
         .btn.loading .spinner{display:block}
         @keyframes spin{to{transform:rotate(360deg)}}
 
-        #status-message, #admin-login-status, #transaction-status {padding:14px; margin-top:16px; border-radius:8px; opacity:0; visibility:hidden; transform:translateY(6px); transition:all .25s ease}
-        #status-message.visible, #admin-login-status.visible, #transaction-status.visible {opacity:1; visibility:visible; transform:translateY(0)}
-        #status-message.success, #admin-login-status.success, #transaction-status.success {background:#DFF0D8; color:#3C763D; border:1px solid #D6E9C6}
-        #status-message.error, #admin-login-status.error, #transaction-status.error {background:#F2DEDE; color:#A94442; border:1px solid #EBCCD1}
+        /* FIX: Notifikasi agar muncul di atas Overlay */
+        #status-message, #admin-login-status, #transaction-status {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            z-index: 10000; /* Layer paling atas */
+            width: 90%;
+            max-width: 400px;
+            padding: 16px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            font-weight: 600;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        #status-message.visible, #admin-login-status.visible, #transaction-status.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        #status-message.success, #admin-login-status.success, #transaction-status.success {
+            background: #4CAF50;
+            color: #fff;
+            border: 2px solid #fff;
+        }
+        #status-message.error, #admin-login-status.error, #transaction-status.error {
+            background: #f44336;
+            color: #fff;
+            border: 2px solid #fff;
+        }
 
         .birthday-notification{padding:15px; background:#FFEB3B; color:#333; border:1px solid #FFC107; border-radius:8px; margin-bottom:20px; text-align:center; font-weight:600; display:none}
         .birthday-notification.show{display:block}
@@ -138,33 +164,15 @@
 
         #rekap-member-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
 
-        .rekap-card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
-            border: 1px solid #eee;
-            overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
-        }
+        .rekap-card {background: #fff; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); border: 1px solid #eee; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; position: relative;}
         .rekap-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        
         .rekap-card.verified { border-left: 6px solid var(--primary-color); }
         .rekap-card.unverified { border-left: 6px solid var(--danger-color); }
 
-        .rekap-card-header {
-            padding: 12px 15px;
-            background: #fdfdfd;
-            border-bottom: 1px dashed #e0e0e0;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
+        .rekap-card-header {padding: 12px 15px; background: #fdfdfd; border-bottom: 1px dashed #e0e0e0; display: flex; justify-content: space-between; align-items: flex-start;}
         .rekap-name { font-size: 1.1em; font-weight: 700; color: #333; margin-bottom: 2px; display:block; }
         .rekap-phone { font-size: 0.95em; color: #666; display: flex; align-items: center; gap: 4px; }
-        .rekap-status-badge {
-            font-size: 0.75em; font-weight: 700; padding: 4px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
-        }
+        .rekap-status-badge {font-size: 0.75em; font-weight: 700; padding: 4px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;}
         .rekap-status-badge.v { background: #e0f2f1; color: var(--primary-color); }
         .rekap-status-badge.u { background: #ffebee; color: var(--danger-color); }
 
@@ -173,206 +181,51 @@
         .rekap-row:last-child { margin-bottom: 0; }
         .rekap-label { min-width: 90px; color: #888; font-weight: 500; font-size: 0.9em; }
         .rekap-val { font-weight: 600; color: #444; flex: 1; word-break: break-word; }
-
         .rekap-card-action { padding: 10px 15px; background: #fafafa; border-top: 1px solid #eee; text-align: right; }
         
-        #share-rekap-wa-btn {
-            background-color: var(--wa-color);
-            color: #fff;
-            margin-top: 20px;
-            border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-            font-weight: 700;
-        }
-        #share-rekap-wa-btn:hover {
-            background-color: var(--wa-dark);
-            transform: translateY(-2px);
-        }
+        #share-rekap-wa-btn {background-color: var(--wa-color); color: #fff; margin-top: 20px; border-radius: 50px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); font-weight: 700;}
+        #share-rekap-wa-btn:hover {background-color: var(--wa-dark); transform: translateY(-2px);}
 
         .admin-header{display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;}
         #logout-btn {width: auto; padding: 10px 20px; background-color: var(--danger-color);}
         #logout-btn:hover {background-color: var(--danger-hover);}
 
-        #global-loader {
-            position: fixed; inset: 0; z-index: 9999; background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center;
-            opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s;
-        }
+        #global-loader {position: fixed; inset: 0; z-index: 9999; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s;}
         #global-loader.visible { opacity: 1; visibility: visible; }
-        #global-loader .spinner {
-            display: block; width: 50px; height: 50px; border-width: 5px;
-            border-color: rgba(0,0,0,.2); border-top-color: var(--primary-color);
-        }
+        #global-loader .spinner {display: block; width: 50px; height: 50px; border-width: 5px; border-color: rgba(0,0,0,.2); border-top-color: var(--primary-color);}
 
-        .admin-nav {
-            display: flex;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 25px;
-        }
-        .admin-nav-button {
-            flex: 1;
-            padding: 14px 10px;
-            font-size: 0.9em;
-            font-weight: 600;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-dark);
-            opacity: 0.7;
-            position: relative;
-            transition: opacity 0.3s, color 0.3s;
-        }
-        .admin-nav-button:hover {
-            opacity: 1;
-            color: var(--primary-color);
-        }
-        .admin-nav-button::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background-color: var(--primary-color);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-        .admin-nav-button.active {
-            opacity: 1;
-            color: var(--primary-color);
-        }
-        .admin-nav-button.active::after {
-            transform: scaleX(1);
-        }
+        .admin-nav {display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 25px;}
+        .admin-nav-button {flex: 1; padding: 14px 10px; font-size: 0.9em; font-weight: 600; background: none; border: none; cursor: pointer; color: var(--text-dark); opacity: 0.7; position: relative; transition: opacity 0.3s, color 0.3s;}
+        .admin-nav-button:hover {opacity: 1; color: var(--primary-color);}
+        .admin-nav-button::after {content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background-color: var(--primary-color); transform: scaleX(0); transition: transform 0.3s ease;}
+        .admin-nav-button.active {opacity: 1; color: var(--primary-color);}
+        .admin-nav-button.active::after {transform: scaleX(1);}
 
-        .admin-tab-pane {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-        .admin-tab-pane.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .admin-tab-pane h3 {
-            text-align: left;
-            font-size: 1.5em;
-            margin-bottom: 20px;
-        }
-         .admin-tab-pane h4 {
-            font-size: 1.1em;
-            color: var(--text-dark);
-            text-align: left;
-            margin-top: 30px;
-            padding-top: 0;
-            border-top: none;
-        }
-        .admin-tab-pane h5 {
-            text-align: left;
-            margin-top: 20px;
-            font-weight: 600;
-        }
+        .admin-tab-pane {display: none; animation: fadeIn 0.5s ease;}
+        .admin-tab-pane.active {display: block;}
+        @keyframes fadeIn {from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); }}
+        .admin-tab-pane h3 {text-align: left; font-size: 1.5em; margin-bottom: 20px;}
+        .admin-tab-pane h4 {font-size: 1.1em; color: var(--text-dark); text-align: left; margin-top: 30px; padding-top: 0; border-top: none;}
+        .admin-tab-pane h5 {text-align: left; margin-top: 20px; font-weight: 600;}
         
-        /* SPECIAL MEMBER UI */
-        .special-badge {
-            display: inline-block;
-            background-color: var(--special-color);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 700;
-            margin-left: 8px;
-            vertical-align: middle;
-            box-shadow: 0 2px 4px rgba(103, 58, 183, 0.3);
-        }
-        /* Style Container Saldo Lebih Menonjol */
-        #special-balance-container {
-            background: linear-gradient(135deg, #F3E5F5, #E1BEE7); /* Gradient Ungu Muda */
-            border: 2px solid var(--special-color);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(103, 58, 183, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
+        .special-badge {display: inline-block; background-color: var(--special-color); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 700; margin-left: 8px; vertical-align: middle; box-shadow: 0 2px 4px rgba(103, 58, 183, 0.3);}
         
-        /* Icon background dekoratif */
-        #special-balance-container::before {
-            content: 'account_balance_wallet';
-            font-family: 'Material Symbols Outlined';
-            position: absolute;
-            right: -10px;
-            bottom: -15px;
-            font-size: 100px;
-            color: rgba(103, 58, 183, 0.1);
-            transform: rotate(-15deg);
-            z-index: 0;
-        }
+        #special-balance-container {background: linear-gradient(135deg, #F3E5F5, #E1BEE7); border: 2px solid var(--special-color); padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 10px rgba(103, 58, 183, 0.2); position: relative; overflow: hidden;}
+        #special-balance-container::before {content: 'account_balance_wallet'; font-family: 'Material Symbols Outlined'; position: absolute; right: -10px; bottom: -15px; font-size: 100px; color: rgba(103, 58, 183, 0.1); transform: rotate(-15deg); z-index: 0;}
 
-        #special-balance-label {
-            display: block;
-            font-size: 0.95em;
-            font-weight: 600;
-            color: #5E35B1;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative; z-index: 1;
-        }
+        #special-balance-label {display: block; font-size: 0.95em; font-weight: 600; color: #5E35B1; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; position: relative; z-index: 1;}
+        .special-balance-amount {font-size: 2.2em; font-weight: 800; color: var(--special-color); display: block; margin: 5px 0 15px 0; position: relative; z-index: 1; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);}
 
-        .special-balance-amount {
-            font-size: 2.2em;
-            font-weight: 800;
-            color: var(--special-color);
-            display: block;
-            margin: 5px 0 15px 0;
-            position: relative; z-index: 1;
-            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
-        }
-
-        /* Pesan Status Saldo (Cukup/Kurang) */
-        #balance-check-status {
-            font-weight: 700;
-            margin-top: 10px;
-            font-size: 0.95em;
-            padding: 8px;
-            border-radius: 6px;
-            display: none;
-            position: relative; z-index: 1;
-        }
+        #balance-check-status {font-weight: 700; margin-top: 10px; font-size: 0.95em; padding: 8px; border-radius: 6px; display: none; position: relative; z-index: 1;}
         #balance-check-status.ok { color: #2E7D32; background: #E8F5E9; border: 1px solid #C8E6C9; }
         #balance-check-status.warning { color: #c62828; background: #FFEBEE; border: 1px solid #FFCDD2; animation: pulse 1s infinite; }
+        @keyframes pulse {0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); }}
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        .top-up-btn {
-            background-color: var(--special-color);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-            transition: all 0.2s;
-            position: relative; z-index: 1;
-            display: inline-flex; align-items: center; gap: 5px;
-        }
+        .top-up-btn {background-color: var(--special-color); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9em; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.2); transition: all 0.2s; position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 5px;}
         .top-up-btn:hover { background-color: #512DA8; transform: translateY(-2px); }
     </style>
 </head>
 <body>
-
 <div id="global-loader">
     <div class="spinner"></div>
 </div>
@@ -380,7 +233,7 @@
 <div class="container">
     <header id="main-header">
         <h1>Sistem Member Dolan Sawah</h1>
-        <small style="opacity: 0.7; font-size: 0.7em;">(Klik header untuk kembali)</small>
+        <small style="opacity: 0.7; font-size: 0.7em;">(Klik header 3x untuk menu rahasia)</small>
     </header>
 
     <div class="nav">
@@ -476,7 +329,6 @@
                         </button>
                     </div>
                 </div>
-                
                 <div id="admin-tab-rewards" class="admin-tab-pane">
                     <h3>Pengaturan Reward</h3>
                     <div id="point-rewards-container">
@@ -572,7 +424,6 @@
         </form>
     </div>
 </div>
-
 <div id="member-detail-overlay" class="overlay">
     <div class="overlay-content">
         <button id="back-to-search-btn" class="btn">
@@ -676,10 +527,8 @@
             <span class="material-symbols-outlined">share</span>
             <span class="btn-text">Share Laporan ke WhatsApp</span>
         </button>
-        
     </div>
 </div>
-
 <div id="edit-member-overlay" class="overlay">
     <div class="overlay-content">
         <h3>Edit Data Member</h3>
@@ -731,6 +580,7 @@
             </ul>
     </div>
 </div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, deleteDoc, updateDoc, increment, runTransaction, serverTimestamp, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -757,11 +607,9 @@
     let fullMemberList = [];
     let infoSourceChart = null;
     
-    // State untuk fitur Share Laporan
+    // State Aplikasi
     let currentRekapData = []; 
     let currentRekapPeriodLabel = 'Hari Ini';
-    
-    // State untuk Secret Menu
     let headerClickCount = 0;
     let headerClickTimer = null;
 
@@ -789,15 +637,16 @@
         button.classList.toggle('loading', isLoading);
     };
 
+    // FUNGSI NOTIFIKASI YANG DIPERBAIKI (TAMPIL DI ATAS OVERLAY)
     const showStatus = (message, isError = false, targetElementId = 'status-message') => {
         const div = document.getElementById(targetElementId);
         if (!div) return;
         div.textContent = message;
-        div.className = '';
+        div.className = ''; 
         div.classList.add(isError ? 'error' : 'success', 'visible');
+        
         setTimeout(() => {
-            div.classList.remove('visible','success','error');
-            div.textContent = '';
+            div.classList.remove('visible', 'success', 'error');
         }, 3500);
     };
 
@@ -846,8 +695,7 @@
         }
         return 'Tidak Diketahui';
     };
-
-    // --- STATS & CHARTS ---
+    // --- CHART & STATS ---
     const renderAddressStats = (addressCounts) => {
         const listEl = document.getElementById('address-stats-list');
         listEl.innerHTML = '';
@@ -912,7 +760,7 @@
         updateInfoSourceList(sourceCounts);
     };
 
-    // --- NAVIGATION & UI SETUP ---
+    // --- NAVIGATION ---
     const setupNavigation = () => {
         document.querySelectorAll('.nav-button').forEach(button => {
             button.addEventListener('click', () => {
@@ -934,10 +782,8 @@
         adminNav.addEventListener('click', e => {
             const button = e.target.closest('.admin-nav-button');
             if (!button) return;
-
             adminNav.querySelectorAll('.admin-nav-button').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.admin-tab-pane').forEach(pane => pane.classList.remove('active'));
-
             const targetId = button.dataset.target;
             button.classList.add('active');
             document.getElementById(targetId)?.classList.add('active');
@@ -962,7 +808,7 @@
         `).join('');
     };
 
-    // --- DATA FETCHING ---
+    // --- FETCH DATA ---
     const fetchPointRewards = async () => {
         try{
             const snapshot = await getDocs(collection(db,"rewards"));
@@ -990,9 +836,7 @@
             } else {
                 document.getElementById('current-top-member-reward').textContent = "Belum diatur.";
             }
-        } catch (err) {
-            console.error("Gagal memuat reward top 5:", err);
-        }
+        } catch (err) { console.error("Gagal memuat reward top 5:", err); }
     };
 
     const fetchAllStatsData = async () => {
@@ -1040,17 +884,14 @@
             filteredRedemptions = allRedemptions.filter(r => r.tanggal >= start && r.tanggal <= end);
         }
         const visitingMemberIds = new Set(filteredTransactions.map(t => t.memberId));
-
         document.getElementById('stat-total-members').textContent   = allMembers.length;
         document.getElementById('stat-new-members').textContent     = filteredMembers.length;
         document.getElementById('stat-visiting-members').textContent= visitingMemberIds.size;
         document.getElementById('stat-redeemed-rewards').textContent= filteredRedemptions.length;
-
         updateInfoSourceChart();
         updateAddressStats(visitingMemberIds);
     };
 
-    // --- LOGIC: MEMBER MANAGEMENT & DISPLAY ---
     const loadAndRenderAllMembers = async () => {
         const listEl = document.getElementById('all-members-list');
         listEl.innerHTML = '<li>Memuat data...</li>';
@@ -1102,22 +943,17 @@
             : '<h4>Reward yang Bisa Diklaim:</h4><p>Poin belum cukup untuk menukar reward.</p>';
     };
 
-    // --- REKAP & WHATSAPP LOGIC ---
+    // --- REKAP & WA ---
     const renderRekapMemberList = (membersToRender) => {
-        // Simpan data untuk Share WA
         currentRekapData = membersToRender;
-
         const listEl = document.getElementById('rekap-member-list');
         const shareBtn = document.getElementById('share-rekap-wa-btn');
-
         if (!membersToRender.length) {
             listEl.innerHTML = '<li style="text-align:center; color:#777; padding:20px;">Tidak ada member baru pada periode ini.</li>';
             shareBtn.style.display = 'none';
             return;
         }
-
         shareBtn.style.display = 'flex';
-        
         listEl.innerHTML = membersToRender.map(member => {
             const waNumber = formatPhoneNumber(member.nomorHp);
             const isVerified = member.isVerified !== false;
@@ -1125,52 +961,24 @@
             const tiktokUser = (member.tiktok || '-').replace('@','');
             const joinDate = formatTimestamp(member.tanggalDaftar);
             const address = member.alamat || '-'; 
-
             return `
                 <li class="rekap-card ${isVerified ? 'verified' : 'unverified'}" id="rekap-item-${member.id}">
                     <div class="rekap-card-header">
                         <div>
                             <span class="rekap-name">${member.nama}</span>
-                            <span class="rekap-phone">
-                                <span class="material-symbols-outlined" style="font-size:14px;">call</span> 
-                                ${member.nomorHp}
-                            </span>
+                            <span class="rekap-phone"><span class="material-symbols-outlined" style="font-size:14px;">call</span> ${member.nomorHp}</span>
                         </div>
-                        <span class="rekap-status-badge ${isVerified ? 'v' : 'u'}">
-                            ${isVerified ? 'Verified' : 'Unverified'}
-                        </span>
+                        <span class="rekap-status-badge ${isVerified ? 'v' : 'u'}">${isVerified ? 'Verified' : 'Unverified'}</span>
                     </div>
-                    
                     <div class="rekap-card-body">
-                         <div class="rekap-row">
-                            <span class="rekap-label">Alamat:</span>
-                            <span class="rekap-val" style="text-transform:capitalize;">${address}</span>
-                        </div>
-                        <div class="rekap-row">
-                            <span class="rekap-label">Tgl Daftar:</span>
-                            <span class="rekap-val">${joinDate} WIB</span>
-                        </div>
-                        <div class="rekap-row">
-                            <span class="rekap-label">Sumber:</span>
-                            <span class="rekap-val">${member.sumberInfo || '-'}</span>
-                        </div>
-                        <div class="rekap-row">
-                            <span class="rekap-label">Sosmed:</span>
-                            <span class="rekap-val">
-                                ${instagramUser !== '-' ? `<span style="color:#E1306C">IG: ${instagramUser}</span> ` : ''}
-                                ${tiktokUser !== '-' ? `<span style="color:#000">TT: ${tiktokUser}</span>` : ''}
-                                ${instagramUser === '-' && tiktokUser === '-' ? '-' : ''}
-                            </span>
-                        </div>
+                         <div class="rekap-row"><span class="rekap-label">Alamat:</span><span class="rekap-val" style="text-transform:capitalize;">${address}</span></div>
+                        <div class="rekap-row"><span class="rekap-label">Tgl Daftar:</span><span class="rekap-val">${joinDate} WIB</span></div>
+                        <div class="rekap-row"><span class="rekap-label">Sumber:</span><span class="rekap-val">${member.sumberInfo || '-'}</span></div>
+                        <div class="rekap-row"><span class="rekap-label">Sosmed:</span><span class="rekap-val">${instagramUser !== '-' ? `<span style="color:#E1306C">IG: ${instagramUser}</span> ` : ''}${tiktokUser !== '-' ? `<span style="color:#000">TT: ${tiktokUser}</span>` : ''}${instagramUser === '-' && tiktokUser === '-' ? '-' : ''}</span></div>
                     </div>
-
                     <div class="rekap-card-footer">
-                        <a href="https://wa.me/${waNumber}" target="_blank" class="btn btn-mini-action wa-direct">
-                            Chat WA
-                        </a>
-                         <button class="btn btn-mini-action ${isVerified ? 'btn-warning' : 'btn-primary'} toggle-verify-btn" data-id="${member.id}" data-verified="${isVerified}">
-                           ${isVerified ? 'Batal Verifikasi' : 'Verifikasi Member'}
-                        </button>
+                        <a href="https://wa.me/${waNumber}" target="_blank" class="btn btn-mini-action wa-direct">Chat WA</a>
+                         <button class="btn btn-mini-action ${isVerified ? 'btn-warning' : 'btn-primary'} toggle-verify-btn" data-id="${member.id}" data-verified="${isVerified}">${isVerified ? 'Batal Verifikasi' : 'Verifikasi Member'}</button>
                     </div>
                 </li>
             `;
@@ -1182,16 +990,9 @@
             showStatus("Tidak ada data untuk dibagikan.", true);
             return;
         }
-
         const now = new Date();
         const tglLaporan = now.toLocaleString('id-ID', { dateStyle: 'full' });
-
-        let message = `📊 *LAPORAN MEMBER BARU DOLAN SAWAH*\n`;
-        message += `🗓️ *Periode:* ${currentRekapPeriodLabel}\n`;
-        message += `📅 *Tanggal Cetak:* ${tglLaporan}\n`;
-        message += `👥 *Total:* ${currentRekapData.length} Member Baru\n`;
-        message += `--------------------------------\n\n`;
-
+        let message = `📊 *LAPORAN MEMBER BARU DOLAN SAWAH*\n🗓️ *Periode:* ${currentRekapPeriodLabel}\n📅 *Tanggal Cetak:* ${tglLaporan}\n👥 *Total:* ${currentRekapData.length} Member Baru\n--------------------------------\n\n`;
         currentRekapData.forEach((member, index) => {
             const ig = member.instagram ? member.instagram : '-';
             const tt = member.tiktok ? member.tiktok : '-';
@@ -1199,80 +1000,87 @@
             const tglDaftar = formatTimestamp(member.tanggalDaftar);
             const statusVerif = member.isVerified ? '✅ VERIFIED' : '❌ UNVERIFIED';
             const address = member.alamat || '-'; 
-
-            message += `*${index + 1}. ${member.nama.toUpperCase()}*\n`;
-            message += `   📱 WA: ${member.nomorHp}\n`;
-            message += `   🏠 Alamat: ${address}\n`; 
-            message += `   🔰 Status: ${statusVerif}\n`;
-            message += `   📅 Join: ${tglDaftar}\n`;
-            message += `   ℹ️ Info: ${sumber}\n`;
+            message += `*${index + 1}. ${member.nama.toUpperCase()}*\n   📱 WA: ${member.nomorHp}\n   🏠 Alamat: ${address}\n   🔰 Status: ${statusVerif}\n   📅 Join: ${tglDaftar}\n   ℹ️ Info: ${sumber}\n`;
             if(ig !== '-') message += `   📸 IG: ${ig}\n`;
             if(tt !== '-') message += `   🎵 TT: ${tt}\n`;
             message += `\n`;
         });
-
-        message += `--------------------------------\n`;
-        message += `✅ *Generated by Attran web*`;
-
-        const encodedMessage = encodeURIComponent(message);
-        window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+        message += `--------------------------------\n✅ *Generated by Attran web*`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
     };
 
+    // --- CEK SALDO (REALTIME) ---
+    const checkBalance = (inputAmount) => {
+        if (!currentMemberData.isSpecial) return;
+        
+        const balanceStatusEl = document.getElementById('balance-check-status');
+        const currentBalance = currentMemberData.specialBalance || 0;
+        const saveBtn = document.getElementById('btn-save-transaction');
 
-    // --- EVENT LISTENERS (MAIN) ---
+        balanceStatusEl.style.display = 'block';
+        
+        if (!inputAmount) {
+            balanceStatusEl.style.display = 'none';
+            saveBtn.disabled = false;
+            return;
+        }
+
+        if (currentBalance >= inputAmount) {
+            balanceStatusEl.className = 'ok';
+            balanceStatusEl.innerHTML = `<span class="material-symbols-outlined" style="vertical-align:middle; font-size:1.2em;">check_circle</span> Saldo CUKUP. Sisa setelah transaksi: Rp ${formatCurrency(currentBalance - inputAmount)}`;
+            saveBtn.disabled = false;
+        } else {
+            balanceStatusEl.className = 'warning';
+            balanceStatusEl.innerHTML = `<span class="material-symbols-outlined" style="vertical-align:middle; font-size:1.2em;">cancel</span> Saldo KURANG Rp ${formatCurrency(inputAmount - currentBalance)}!`;
+            saveBtn.disabled = true; 
+        }
+    };
+
+    // --- MAIN EVENT LISTENERS ---
     document.addEventListener('DOMContentLoaded', async () => {
         globalLoader.classList.add('visible');
         setupNavigation();
         setupAdminTabs(); 
         
-        closeHistoryBtn.addEventListener('click', () => {
-            transactionHistoryOverlay.classList.remove('visible');
-        });
-
+        closeHistoryBtn.addEventListener('click', () => transactionHistoryOverlay.classList.remove('visible'));
         document.getElementById('share-rekap-wa-btn').addEventListener('click', generateWhatsAppReport);
+        document.getElementById('transaction-amount').addEventListener('input', (e) => checkBalance(parseInt(e.target.value, 10)));
 
         onAuthStateChanged(auth, user => {
             if (user) {
                 adminLoginView.style.display = 'none';
                 adminContentView.style.display = 'block';
-                if (document.getElementById('nav-admin').classList.contains('active')) {
-                   updateStatsUI('today');
-                }
+                if (document.getElementById('nav-admin').classList.contains('active')) updateStatsUI('today');
             } else {
                 adminLoginView.style.display = 'block';
                 adminContentView.style.display = 'none';
             }
         });
         
-        // --- SECRET MENU TRIGGER ---
+        // SECRET MENU TRIGGER (LOGIC: KLIK HEADER 3X)
         const mainHeader = document.getElementById('main-header');
         mainHeader.addEventListener('click', () => {
             headerClickCount++;
             if (headerClickTimer) clearTimeout(headerClickTimer);
-            
             if (headerClickCount === 3) {
-                // Triggered!
                 secretMenuOverlay.classList.add('visible');
                 headerClickCount = 0;
             } else {
-                // Reset counter after 1 second if not reached 3
-                headerClickTimer = setTimeout(() => {
-                    headerClickCount = 0;
-                }, 800);
+                headerClickTimer = setTimeout(() => { headerClickCount = 0; }, 800);
             }
         });
-
         document.getElementById('close-secret-btn').addEventListener('click', () => {
             secretMenuOverlay.classList.remove('visible');
             document.getElementById('register-special-form').reset();
         });
 
-        // --- REGISTER SPECIAL MEMBER LOGIC ---
+        // REGISTER SPECIAL MEMBER
         document.getElementById('register-special-form').addEventListener('submit', async e => {
             e.preventDefault();
-            const button = e.target.querySelector('button');
-            showLoading(button, true);
             const form = e.target;
+            const button = form.querySelector('button[type="submit"]'); 
+            showLoading(button, true);
+            
             const nomorHp = form.querySelector('#spec-nomor-hp').value.trim();
             const saldoAwal = parseInt(form.querySelector('#spec-saldo-awal').value, 10) || 0;
 
@@ -1290,16 +1098,16 @@
                     instagram: '',
                     tiktok: '',
                     isVerified: true,
-                    isSpecial: true,         // Penanda Member Spesial
-                    specialBalance: saldoAwal, // Saldo
+                    isSpecial: true,         
+                    specialBalance: saldoAwal, 
                     poin: 0,
                     sisaPembelanjaan: 0,
                     tanggalDaftar: serverTimestamp()
                 });
 
-                showStatus("Member SPESIAL berhasil didaftarkan!");
+                showStatus("Sukses! Member Spesial berhasil didaftarkan.", false);
                 form.reset();
-                secretMenuOverlay.classList.remove('visible');
+                secretMenuOverlay.classList.remove('visible'); 
                 await fetchAllStatsData();
                 
             }catch(err){
@@ -1309,7 +1117,7 @@
             }
         });
 
-        // --- TOP UP LOGIC ---
+        // TOP UP LOGIC
         document.getElementById('top-up-btn').addEventListener('click', () => {
              document.getElementById('top-up-amount').value = '';
              topUpOverlay.classList.add('visible');
@@ -1321,36 +1129,19 @@
             e.preventDefault();
             const button = e.target.querySelector('button');
             const amount = parseInt(document.getElementById('top-up-amount').value, 10);
-            
-            if (!amount || amount <= 0) {
-                 showStatus("Nominal tidak valid", true);
-                 return;
-            }
+            if (!amount || amount <= 0) { showStatus("Nominal tidak valid", true); return; }
 
             showLoading(button, true);
             try {
-                await updateDoc(doc(db, "members", currentMemberId), {
-                    specialBalance: increment(amount)
-                });
-                
-                // Update UI lokal
+                await updateDoc(doc(db, "members", currentMemberId), { specialBalance: increment(amount) });
                 currentMemberData.specialBalance = (currentMemberData.specialBalance || 0) + amount;
                 document.getElementById('info-special-balance').textContent = "Rp " + formatCurrency(currentMemberData.specialBalance);
-                
                 showStatus(`Saldo berhasil ditambah Rp ${formatCurrency(amount)}`);
                 topUpOverlay.classList.remove('visible');
-                
-                // Re-check balance if there's input in transaction
                 const trxAmount = parseInt(document.getElementById('transaction-amount').value, 10);
                 if (trxAmount) checkBalance(trxAmount);
-                
-            } catch (err) {
-                showStatus("Gagal isi saldo.", true);
-            } finally {
-                showLoading(button, false);
-            }
+            } catch (err) { showStatus("Gagal isi saldo.", true); } finally { showLoading(button, false); }
         });
-
 
         document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1362,64 +1153,21 @@
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
                 let message = "Login gagal. Periksa koneksi internet Anda.";
-                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    message = "Email atau password yang Anda masukkan salah.";
-                }
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') message = "Email atau password yang Anda masukkan salah.";
                 showStatus(message, true, 'admin-login-status');
-            } finally {
-                showLoading(button, false);
-            }
+            } finally { showLoading(button, false); }
         });
         
         document.getElementById('logout-btn').addEventListener('click', async () => {
-            try {
-                await signOut(auth);
-                showStatus("Anda berhasil logout.");
-                document.getElementById('nav-search').click();
-            } catch (error) {
-                showStatus("Gagal untuk logout.", true);
-            }
+            try { await signOut(auth); showStatus("Anda berhasil logout."); document.getElementById('nav-search').click(); } catch (error) { showStatus("Gagal untuk logout.", true); }
         });
 
-        // --- FUNGSI CEK SALDO REALTIME ---
-        const checkBalance = (inputAmount) => {
-            if (!currentMemberData.isSpecial) return;
-            
-            const balanceStatusEl = document.getElementById('balance-check-status');
-            const currentBalance = currentMemberData.specialBalance || 0;
-            const saveBtn = document.getElementById('btn-save-transaction');
-
-            balanceStatusEl.style.display = 'block';
-            
-            if (!inputAmount) {
-                balanceStatusEl.style.display = 'none';
-                saveBtn.disabled = false;
-                return;
-            }
-
-            if (currentBalance >= inputAmount) {
-                balanceStatusEl.className = 'ok';
-                balanceStatusEl.innerHTML = `<span class="material-symbols-outlined" style="vertical-align:middle; font-size:1.2em;">check_circle</span> Saldo CUKUP. Sisa setelah transaksi: Rp ${formatCurrency(currentBalance - inputAmount)}`;
-                saveBtn.disabled = false;
-            } else {
-                balanceStatusEl.className = 'warning';
-                balanceStatusEl.innerHTML = `<span class="material-symbols-outlined" style="vertical-align:middle; font-size:1.2em;">cancel</span> Saldo KURANG Rp ${formatCurrency(inputAmount - currentBalance)}!`;
-                saveBtn.disabled = true; // Disable tombol simpan
-            }
-        };
-
-        // Event listener untuk input transaksi (Realtime check)
-        document.getElementById('transaction-amount').addEventListener('input', (e) => {
-            const val = parseInt(e.target.value, 10);
-            checkBalance(val);
-        });
-
+        // PENCARIAN & DISPLAY MEMBER
         document.getElementById('search-form').addEventListener('submit', async e => {
             e.preventDefault();
             const button = e.target.querySelector('button');
             showLoading(button, true);
             
-            // Reset UI State
             document.getElementById('balance-check-status').style.display = 'none';
             document.getElementById('btn-save-transaction').disabled = false;
             document.getElementById('transaction-amount').value = '';
@@ -1437,7 +1185,6 @@
                     document.getElementById('info-poin').textContent = currentMemberData.poin || 0;
                     document.getElementById('info-sisa').textContent = formatCurrency(currentMemberData.sisaPembelanjaan);
                     
-                    // --- HANDLE SPECIAL MEMBER UI ---
                     const specialBadge = document.getElementById('special-badge-display');
                     const specialBalanceContainer = document.getElementById('special-balance-container');
                     const transactionNote = document.getElementById('transaction-note');
@@ -1446,14 +1193,12 @@
                         specialBadge.style.display = 'inline-block';
                         specialBalanceContainer.style.display = 'block';
                         document.getElementById('info-special-balance').textContent = "Rp " + formatCurrency(currentMemberData.specialBalance || 0);
-                        
                         transactionNote.innerHTML = `<strong style="color:var(--special-color);">PERHATIAN KASIR:</strong><br>Member ini menggunakan SALDO. Pastikan saldo cukup sebelum memproses.`;
                     } else {
                         specialBadge.style.display = 'none';
                         specialBalanceContainer.style.display = 'none';
                         transactionNote.textContent = "Masukkan nominal belanja. Poin akan terhitung otomatis.";
                     }
-
                     displayClaimableRewards(currentMemberData.poin || 0);
 
                     const birthdayRewardName = getBirthdayReward(currentMemberData.tanggalLahir);
@@ -1468,14 +1213,8 @@
                     }
                     memberDetailOverlay.classList.add('visible');
                     document.getElementById('transaction-amount').focus();
-                }else{
-                    showStatus(`Member dengan No. HP ${nomorHp} tidak ditemukan.`, true);
-                }
-            }catch(err){
-                showStatus(err.message || "Terjadi kesalahan.", true);
-            }finally{
-                showLoading(button, false);
-            }
+                }else{ showStatus(`Member dengan No. HP ${nomorHp} tidak ditemukan.`, true); }
+            }catch(err){ showStatus(err.message || "Terjadi kesalahan.", true); }finally{ showLoading(button, false); }
         });
 
         document.getElementById('register-form').addEventListener('submit', async e => {
@@ -1488,7 +1227,6 @@
                 const docRef  = doc(db,"members", nomorHp);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) throw new Error("Nomor HP ini sudah terdaftar sebagai member.");
-                
                 await setDoc(docRef, {
                     nama: form.querySelector('#nama').value,
                     alamat: form.querySelector('#alamat').value,
@@ -1502,43 +1240,29 @@
                     sisaPembelanjaan: 0,
                     tanggalDaftar: serverTimestamp()
                 });
-
                 showStatus("Member baru berhasil didaftarkan!");
                 form.reset();
                 await fetchAllStatsData();
                 document.getElementById('nav-search').click();
                 document.getElementById('search-hp').value = nomorHp;
                 document.querySelector('#search-form button[type="submit"]').click();
-                
             }catch(err){
-                if(err.message.includes("sudah terdaftar")){
-                    showStatus("Gagal: Nomor HP ini sudah terdaftar. Silakan gunakan nomor lain.", true);
-                } else {
-                    showStatus(err.message || "Gagal mendaftar.", true);
-                }
-            }finally{
-                showLoading(button, false);
-            }
+                if(err.message.includes("sudah terdaftar")) showStatus("Gagal: Nomor HP ini sudah terdaftar.", true);
+                else showStatus(err.message || "Gagal mendaftar.", true);
+            }finally{ showLoading(button, false); }
         });
 
+        // TRANSAKSI LOGIC (Potong Saldo)
         document.getElementById('add-transaction-form').addEventListener('submit', async e => {
             e.preventDefault();
             const button = e.target.querySelector('button');
             const amountInput = document.getElementById('transaction-amount');
             const amount = parseInt(amountInput.value, 10);
-            
-            if (!amount || !currentMemberId || amount <= 0) {
-                showStatus("Masukkan nominal transaksi yang valid.", true, 'transaction-status');
-                return;
-            }
+            if (!amount || !currentMemberId || amount <= 0) { showStatus("Masukkan nominal transaksi yang valid.", true, 'transaction-status'); return; }
 
-            // Double Check Balance for Special Member before Submit
             if (currentMemberData.isSpecial) {
                 const currentBalance = currentMemberData.specialBalance || 0;
-                if (currentBalance < amount) {
-                    showStatus("TRANSAKSI DITOLAK: Saldo Member Tidak Cukup!", true, 'transaction-status');
-                    return;
-                }
+                if (currentBalance < amount) { showStatus("TRANSAKSI DITOLAK: Saldo Member Tidak Cukup!", true, 'transaction-status'); return; }
             }
 
             showLoading(button, true);
@@ -1548,45 +1272,25 @@
                 let pointsGained = 0;
                 let newRemainder = 0;
                 let newSpecialBalance = 0;
-                
                 await runTransaction(db, async (transaction) => {
                     const memberDoc = await transaction.get(memberDocRef);
                     if (!memberDoc.exists()) throw new Error("Member tidak ditemukan.");
-
                     const data = memberDoc.data();
-                    
-                    // --- LOGIC MEMBER SPESIAL ---
                     if (data.isSpecial) {
                         const currentBalance = data.specialBalance || 0;
-                        if (currentBalance < amount) {
-                            throw new Error(`Saldo tidak cukup! Sisa: Rp ${formatCurrency(currentBalance)}`);
-                        }
-                        // Kurangi Saldo
+                        if (currentBalance < amount) throw new Error(`Saldo tidak cukup! Sisa: Rp ${formatCurrency(currentBalance)}`);
                         newSpecialBalance = currentBalance - amount;
                         transaction.update(memberDocRef, { specialBalance: newSpecialBalance });
                     }
-                    // --- END LOGIC SPESIAL ---
-
                     const oldRemainder = data.sisaPembelanjaan || 0;
                     const totalForPoints = amount + oldRemainder;
-                    
                     pointsGained = Math.floor(totalForPoints / POIN_THRESHOLD);
                     newRemainder = totalForPoints % POIN_THRESHOLD;
-
-                    transaction.update(memberDocRef, {
-                        poin: increment(pointsGained),
-                        sisaPembelanjaan: newRemainder
-                    });
+                    transaction.update(memberDocRef, { poin: increment(pointsGained), sisaPembelanjaan: newRemainder });
                 });
                 
-                await addDoc(collection(db, "transactions"), { 
-                    memberId: currentMemberId, 
-                    nominal: amount, 
-                    poinDidapat: pointsGained,
-                    tanggal: serverTimestamp()
-                });
+                await addDoc(collection(db, "transactions"), { memberId: currentMemberId, nominal: amount, poinDidapat: pointsGained, tanggal: serverTimestamp() });
                 
-                // Update Local UI
                 const newPointsTotal = (currentMemberData.poin || 0) + pointsGained;
                 currentMemberData.poin = newPointsTotal;
                 currentMemberData.sisaPembelanjaan = newRemainder;
@@ -1594,26 +1298,19 @@
                 if (currentMemberData.isSpecial) {
                     currentMemberData.specialBalance = newSpecialBalance;
                     document.getElementById('info-special-balance').textContent = "Rp " + formatCurrency(newSpecialBalance);
-                    checkBalance(0); // Reset pesan status
+                    checkBalance(0);
                 }
-
                 document.getElementById('info-poin').textContent = newPointsTotal;
                 document.getElementById('info-sisa').textContent = formatCurrency(newRemainder);
                 displayClaimableRewards(newPointsTotal);
                 
                 let successMsg = `Transaksi berhasil! Member mendapat ${pointsGained} poin.`;
                 if (currentMemberData.isSpecial) successMsg += " Saldo terpotong.";
-                
                 showStatus(successMsg, false, 'transaction-status');
                 e.target.reset();
-                document.getElementById('balance-check-status').style.display = 'none'; // Sembunyikan pesan saldo
+                document.getElementById('balance-check-status').style.display = 'none';
                 await fetchAllStatsData();
-
-            } catch (err) {
-                showStatus(err.message || "Gagal menyimpan transaksi.", true, 'transaction-status');
-            } finally {
-                showLoading(button, false);
-            }
+            } catch (err) { showStatus(err.message || "Gagal menyimpan transaksi.", true, 'transaction-status'); } finally { showLoading(button, false); }
         });
 
         document.getElementById('member-detail-overlay').addEventListener('click', async e => {
@@ -1627,18 +1324,13 @@
                 const memberDocRef = doc(db,"members", currentMemberId);
                 await updateDoc(memberDocRef, { poin: increment(-pointsCost) });
                 await addDoc(collection(db,"redemptions"), { memberId: currentMemberId, rewardName: name, pointsSpent: pointsCost, tanggal: serverTimestamp() });
-
                 const newPoints = Math.max(0, (currentMemberData.poin || 0) - pointsCost);
                 currentMemberData.poin = newPoints;
                 document.getElementById('info-poin').textContent = newPoints;
                 displayClaimableRewards(newPoints);
                 showStatus(`Poin berhasil ditukar dengan ${name}!`, false, 'transaction-status');
                 await fetchAllStatsData();
-            }catch(err){
-                showStatus("Gagal menukar poin.", true, 'transaction-status');
-            }finally{
-                showLoading(button, false);
-            }
+            }catch(err){ showStatus("Gagal menukar poin.", true, 'transaction-status'); }finally{ showLoading(button, false); }
         });
 
         backToSearchBtn.addEventListener('click', () => {
@@ -1662,9 +1354,7 @@
                     showStatus("Reward poin berhasil ditambahkan!");
                     e.target.reset();
                     await fetchPointRewards();
-                } catch (err) { showStatus(err.message, true); } 
-                finally { showLoading(button, false); }
-
+                } catch (err) { showStatus(err.message, true); } finally { showLoading(button, false); }
             } else if (e.target.id === 'add-birthday-reward-form') {
                 const button = e.target.querySelector('button');
                 showLoading(button, true);
@@ -1675,9 +1365,7 @@
                     showStatus("Reward ultah berhasil ditambahkan!");
                     e.target.reset();
                     await fetchBirthdayRewards();
-                }catch(err){ showStatus(err.message, true); }
-                finally{ showLoading(button, false); }
-            
+                }catch(err){ showStatus(err.message, true); } finally{ showLoading(button, false); }
             } else if (e.target.id === 'save-top-member-reward-form') {
                 const button = e.target.querySelector('button');
                 showLoading(button, true);
@@ -1688,11 +1376,7 @@
                     showStatus("Reward Top 5 berhasil disimpan!");
                     topMemberRewardName = name;
                     document.getElementById('current-top-member-reward').textContent = name;
-                } catch (err) {
-                    showStatus(err.message, true);
-                } finally {
-                    showLoading(button, false);
-                }
+                } catch (err) { showStatus(err.message, true); } finally { showLoading(button, false); }
             }
         });
 
@@ -1708,8 +1392,7 @@
                     await deleteDoc(doc(db, collectionName, id));
                     showStatus("Reward berhasil dihapus.");
                     (type === 'points') ? await fetchPointRewards() : await fetchBirthdayRewards();
-                } catch (err) { showStatus("Gagal menghapus reward.", true); } 
-                finally { showLoading(deleteBtn, false); }
+                } catch (err) { showStatus("Gagal menghapus reward.", true); } finally { showLoading(deleteBtn, false); }
             }
             if (target.parentElement.classList.contains('stats-filter') && target.tagName === 'BUTTON') {
                 adminSection.querySelectorAll('.stats-filter button').forEach(b => b.classList.remove('active'));
@@ -1718,30 +1401,13 @@
             }
             if (target.id === 'show-all-members-btn' || target.closest('#show-all-members-btn')) {
                 globalLoader.classList.add('visible');
-                try {
-                    await loadAndRenderAllMembers();
-                    allMembersOverlay.classList.add('visible');
-                } catch (error) {
-                    console.error("Gagal memuat semua member:", error);
-                    showStatus("Gagal memuat data member. Silakan coba lagi.", true);
-                } finally {
-                    globalLoader.classList.remove('visible');
-                }
+                try { await loadAndRenderAllMembers(); allMembersOverlay.classList.add('visible'); } catch (error) { showStatus("Gagal memuat data member.", true); } finally { globalLoader.classList.remove('visible'); }
             }
             if (target.id === 'rekap-member-baru-btn' || target.closest('#rekap-member-baru-btn')) {
                 if (fullMemberList.length === 0) {
                      globalLoader.classList.add('visible');
-                     try {
-                         await loadAndRenderAllMembers();
-                     } catch(err) {
-                         showStatus("Gagal memuat data awal untuk rekap.", true);
-                         globalLoader.classList.remove('visible');
-                         return;
-                     } finally {
-                         globalLoader.classList.remove('visible');
-                     }
+                     try { await loadAndRenderAllMembers(); } catch(err) { showStatus("Gagal memuat data awal.", true); globalLoader.classList.remove('visible'); return; } finally { globalLoader.classList.remove('visible'); }
                 }
-                showRekapData('today');
                 rekapMemberOverlay.classList.add('visible');
             }
         });
@@ -1753,14 +1419,12 @@
             renderMemberList(filtered);
         });
 
-        
         document.getElementById('all-members-list').addEventListener('click', async (e) => {
             const button = e.target.closest('button');
             if (!button) return;
             const { id: memberId, name: memberName } = button.dataset;
-            
             if (button.classList.contains('delete-member-btn')){
-                if (!confirm(`Yakin ingin menghapus member "${memberName}" (${memberId})? Data tidak bisa dikembalikan.`)) return;
+                if (!confirm(`Yakin ingin menghapus member "${memberName}" (${memberId})?`)) return;
                 try{
                     await deleteDoc(doc(db,"members", memberId));
                     document.getElementById(`member-item-${memberId}`)?.remove();
@@ -1768,7 +1432,6 @@
                     await fetchAllStatsData();
                     showStatus("Member berhasil dihapus.");
                 }catch(err){ showStatus("Gagal menghapus member.", true); }
-            
             }else if (button.classList.contains('edit-member-btn')){
                 const memberData = fullMemberList.find(m => m.id === memberId);
                 if (memberData){
@@ -1790,46 +1453,26 @@
                 document.getElementById('history-member-name').textContent = memberName;
                 const historyListEl = document.getElementById('history-list');
                 historyListEl.innerHTML = '<li>Memuat riwayat...</li>';
-
                 try {
                     const transactionsRef = collection(db, "transactions");
                     const q = query(transactionsRef, where("memberId", "==", memberId));
                     const querySnapshot = await getDocs(q);
-
                     if (querySnapshot.empty) {
                         historyListEl.innerHTML = '<li>Tidak ada riwayat transaksi ditemukan.</li>';
                     } else {
                         const transactions = querySnapshot.docs.map(doc => {
                             const data = doc.data();
-                            const txDate = data.tanggal ? data.tanggal.toDate() : new Date(0); 
-                            return {
-                                ...data,
-                                jsDate: txDate
-                            };
+                            return { ...data, jsDate: data.tanggal ? data.tanggal.toDate() : new Date(0) };
                         });
-
                         transactions.sort((a, b) => b.jsDate.getTime() - a.jsDate.getTime());
-
-                        historyListEl.innerHTML = transactions.map(tx => {
-                            return `
+                        historyListEl.innerHTML = transactions.map(tx => `
                                 <li class="data-list-item">
-                                    <span>
-                                        <strong>Rp ${formatCurrency(tx.nominal)}</strong>
-                                        <small>${formatTimestamp(tx.jsDate)}</small>
-                                    </span>
+                                    <span><strong>Rp ${formatCurrency(tx.nominal)}</strong><small>${formatTimestamp(tx.jsDate)}</small></span>
                                     <strong style="color:var(--accent-color)">+${tx.poinDidapat} Poin</strong>
-                                </li>
-                            `;
-                        }).join('');
+                                </li>`).join('');
                     }
                     transactionHistoryOverlay.classList.add('visible');
-
-                } catch (err) {
-                    console.error("Gagal memuat riwayat:", err);
-                    showStatus("Gagal memuat riwayat transaksi.", true);
-                } finally {
-                    globalLoader.classList.remove('visible');
-                }
+                } catch (err) { showStatus("Gagal memuat riwayat transaksi.", true); } finally { globalLoader.classList.remove('visible'); }
             }
         });
 
@@ -1855,21 +1498,15 @@
                 await loadAndRenderAllMembers();
                 await fetchAllStatsData();
                 showStatus("Data member berhasil diupdate.");
-            }catch(err){ showStatus("Gagal mengupdate data.", true); }
-            finally{ showLoading(button, false); }
+            }catch(err){ showStatus("Gagal mengupdate data.", true); } finally{ showLoading(button, false); }
         });
         
         const showRekapData = (period) => {
-            // Update Label Periode untuk Report
             if(period === 'today') currentRekapPeriodLabel = 'Hari Ini';
             else if(period === 'week') currentRekapPeriodLabel = 'Minggu Ini';
             else if(period === 'month') currentRekapPeriodLabel = 'Bulan Ini';
-
             const { start, end } = getDateRange(period);
-            const data = (fullMemberList.length > 0 ? fullMemberList : allMembers).map(m => ({
-                ...m,
-                tanggalDaftar: m.tanggalDaftar?.toDate?.() || new Date(m.tanggalDaftar)
-            }));
+            const data = (fullMemberList.length > 0 ? fullMemberList : allMembers).map(m => ({ ...m, tanggalDaftar: m.tanggalDaftar?.toDate?.() || new Date(m.tanggalDaftar) }));
             const filtered = data.filter(m => m.tanggalDaftar >= start && m.tanggalDaftar <= end);
             renderRekapMemberList(filtered);
         };
@@ -1887,59 +1524,34 @@
             if (!button) return;
             const memberId = button.dataset.id;
             const newStatus = button.dataset.verified !== 'true';
-            
-            if(!confirm(`Apakah Anda yakin ingin mengubah status verifikasi member ini menjadi ${newStatus ? 'TERVERIFIKASI' : 'BELUM VERIFIKASI'}?`)) return;
-
+            if(!confirm(`Apakah Anda yakin ingin mengubah status verifikasi member ini?`)) return;
             button.disabled = true;
             button.innerHTML = '<span class="spinner" style="display:block; width:16px; height:16px;"></span>';
-
             try {
                 await updateDoc(doc(db, "members", memberId), { isVerified: newStatus });
-                
-                // Update data lokal
                 const memberIndex = fullMemberList.findIndex(m => m.id === memberId);
                 if (memberIndex > -1) fullMemberList[memberIndex].isVerified = newStatus;
-
                 const rekapItem = currentRekapData.find(m => m.id === memberId);
                 if(rekapItem) rekapItem.isVerified = newStatus;
-                
-                // Update Tampilan Card secara langsung
                 const card = document.getElementById(`rekap-item-${memberId}`);
                 if(card){
                     card.classList.remove('verified', 'unverified');
                     card.classList.add(newStatus ? 'verified' : 'unverified');
-                    
                     const badge = card.querySelector('.rekap-status-badge');
                     badge.className = `rekap-status-badge ${newStatus ? 'v' : 'u'}`;
                     badge.textContent = newStatus ? 'Verified' : 'Unverified';
-
                     button.dataset.verified = newStatus;
                     button.className = `btn btn-mini-action ${newStatus ? 'btn-warning' : 'btn-primary'} toggle-verify-btn`;
                 }
-
                 showStatus("Status verifikasi berhasil diubah.");
-            } catch (err) { 
-                showStatus("Gagal mengubah status verifikasi.", true); 
-            } finally { 
-                button.disabled = false;
-                button.innerHTML = newStatus ? 'Batal Verifikasi' : 'Verifikasi Member';
-            }
+            } catch (err) { showStatus("Gagal mengubah status verifikasi.", true); } finally { button.disabled = false; button.innerHTML = newStatus ? 'Batal Verifikasi' : 'Verifikasi Member'; }
         });
 
         try {
-            await Promise.all([
-                fetchPointRewards(),
-                fetchBirthdayRewards(),
-                fetchAllStatsData(),
-                fetchTopMemberReward()
-            ]);
+            await Promise.all([fetchPointRewards(), fetchBirthdayRewards(), fetchAllStatsData(), fetchTopMemberReward()]);
             initializeChart();
             updateStatsUI('today');
-        } catch (error) {
-            showStatus("Gagal memuat data awal aplikasi. Periksa koneksi internet.", true);
-        } finally {
-            globalLoader.classList.remove('visible');
-        }
+        } catch (error) { showStatus("Gagal memuat data awal aplikasi.", true); } finally { globalLoader.classList.remove('visible'); }
     });
 </script>
 </body>
